@@ -55,3 +55,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class UserProfile(models.Model):
+    first_name = models.CharField(_("first name"), max_length=100)
+    last_name = models.CharField(_("last name"), max_length=100)
+    birth_date = models.DateField(_("birth date"))
+    created_date = models.DateTimeField(_("created date"), auto_now_add=True)
+    updated_date = models.DateTimeField(_("updated date"), auto_now=True)
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name
