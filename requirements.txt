@@ -7,3 +7,4 @@ python-decouple==3.8
 djangorestframework
 markdown
 django-filter
+pygments
