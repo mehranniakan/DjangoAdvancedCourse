@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ورود
+{% endblock %}
+
+{% block content %}
+
+<div class="card auth-card">
+
+    <h2>ورود</h2>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <div class="form-group">
+
+            <label>ایمیل</label>
+
+            {{ form.email }}
+
+        </div>
+
+        <div class="form-group">
+
+            <label>رمز عبور</label>
+
+            {{ form.password }}
+
+        </div>
+
+        <button class="btn btn-primary" type="submit">
+            ورود
+        </button>
+
+    </form>
+
+    <p class="switch-page">
+        حساب ندارید؟
+
+        <a href="{% url 'register' %}">
+            ساخت حساب
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}
