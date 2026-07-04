@@ -10,6 +10,6 @@ class TaskApi(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,OwnerOnly]
     filter_backends = (DjangoFilterBackend,SearchFilter,OrderingFilter)
-    filter_fields = ('status',)
+    filterset_fields = ('status',)
     search_fields = ('title','description')
     ordering_fields = ('created_date',)
