@@ -1,18 +1,11 @@
-from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets,filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .pagination import *
-from rest_framework.decorators import api_view
-from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
-    ListCreateAPIView
-from .permissions import OwnerOnlyPermission
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from functions import is_valid_uuid
+
+from .pagination import *
+from .permissions import OwnerOnlyPermission
 from .serializers import *
 from ...models import Posts
-
 
 # @api_view(['POST', 'GET', 'PUT', 'DELETE'])
 # def posts(request):
@@ -116,6 +109,7 @@ from ...models import Posts
 
 """View Sets"""
 
+
 # class PostApi(viewsets.ViewSet):
 #     queryset = Posts.objects.all()
 #     serializer_class = PostSerializer
@@ -155,22 +149,23 @@ from ...models import Posts
 #         post_obj.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class PostApi(viewsets.ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly,OwnerOnlyPermission]
-    filter_backends = (DjangoFilterBackend,filters.OrderingFilter,filters.SearchFilter,)
+    permission_classes = [IsAuthenticatedOrReadOnly, OwnerOnlyPermission]
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    )
     pagination_class = DefaultPagination
-    filterset_fields = ['category', 'status', 'author']
-    search_fields = ('title','content')
-    ordering_fields = ('created_date',)
-
+    filterset_fields = ["category", "status", "author"]
+    search_fields = ("title", "content")
+    ordering_fields = ("created_date",)
 
 
 class CategoryApi(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-
-

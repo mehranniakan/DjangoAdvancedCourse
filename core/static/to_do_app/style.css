@@ -143,38 +143,38 @@ textarea {
    Top Bar
 =========================== */
 
-.top-bar{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    margin-bottom:30px;
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
-.search-form{
-    flex:1;
-    display:flex;
-    gap:10px;
+.search-form {
+    flex: 1;
+    display: flex;
+    gap: 10px;
 }
 
-.logout-btn{
-    width:45px;
-    height:45px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:50%;
-    background:#fff;
-    color:#dc3545;
-    text-decoration:none;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
-    transition:.3s;
-    flex-shrink:0;
+.logout-btn {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+    color: #dc3545;
+    text-decoration: none;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+    transition: .3s;
+    flex-shrink: 0;
 }
 
-.logout-btn:hover{
-    background:#dc3545;
-    color:#fff;
-    transform:rotate(-10deg);
+.logout-btn:hover {
+    background: #dc3545;
+    color: #fff;
+    transform: rotate(-10deg);
 }
 
 

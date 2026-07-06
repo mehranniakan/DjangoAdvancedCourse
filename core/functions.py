@@ -1,8 +1,8 @@
 import uuid
-from django.core.mail import send_mail
-from mail_templated import EmailMessage
-from django.template.loader import render_to_string
+
 from django.core.mail import EmailMultiAlternatives
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -14,8 +14,17 @@ def is_valid_uuid(uuid_to_test, version=4):
         return False
     return True
 
-def send_email_function(to:list, sender:str, subject:str, message:str, email_type="txt" ,template=None, context=None):
-    if email_type=="txt":
+
+def send_email_function(
+        to: list,
+        sender: str,
+        subject: str,
+        message: str,
+        email_type="txt",
+        template=None,
+        context=None,
+):
+    if email_type == "txt":
         send_mail(
             subject,
             message,
@@ -23,7 +32,7 @@ def send_email_function(to:list, sender:str, subject:str, message:str, email_typ
             to,
             fail_silently=False,
         )
-    elif email_type=="html":
+    elif email_type == "html":
         html = render_to_string(template, context)
 
         email = EmailMultiAlternatives(
@@ -31,17 +40,13 @@ def send_email_function(to:list, sender:str, subject:str, message:str, email_typ
             body=message,
             from_email=sender,
             to=to,
-
         )
 
         email.attach_alternative(html, "text/html")
         email.send()
 
 
-def generate_token(user:object):
+def generate_token(user: object):
     token = RefreshToken.for_user(user)
     token = token.access_token
     return token
-
-
-

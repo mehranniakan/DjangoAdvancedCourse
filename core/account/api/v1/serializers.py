@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from jwt import exceptions, decode
+
 from account.models import User, UserProfile
 from functions import send_email_function, generate_token
-from django.utils import timezone
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -16,17 +16,24 @@ class RegisterSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(required=False)
     email = serializers.EmailField(required=True)
     confirm_password = serializers.CharField(max_length=255, write_only=True)
-    password = serializers.CharField(max_length=255, write_only=True, validators=[validate_password])
+    password = serializers.CharField(
+        max_length=255, write_only=True, validators=[validate_password]
+    )
 
     class Meta:
         model = User
-        fields = ['first_name','last_name','birth_date','email', 'password', 'confirm_password']
+        fields = [
+            "first_name",
+            "last_name",
+            "birth_date",
+            "email",
+            "password",
+            "confirm_password",
+        ]
 
     def validate(self, attrs):
-        if attrs.get('password') != attrs.get('confirm_password'):
-            raise serializers.ValidationError({
-                'password': 'Passwords must match'
-            })
+        if attrs.get("password") != attrs.get("confirm_password"):
+            raise serializers.ValidationError({"password": "Passwords must match"})
         return super().validate(attrs)
 
     def create(self, validated_data):
@@ -52,49 +59,48 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class AuthTokenSerializer(serializers.Serializer):
-    email = serializers.CharField(
-        label=_("Email"),
-        write_only=True
-    )
+    email = serializers.CharField(label=_("Email"), write_only=True)
     password = serializers.CharField(
         label=_("Password"),
-        style={'input_type': 'password'},
+        style={"input_type": "password"},
         trim_whitespace=False,
-        write_only=True
+        write_only=True,
     )
-    token = serializers.CharField(
-        label=_("Token"),
-        read_only=True
-    )
+    token = serializers.CharField(label=_("Token"), read_only=True)
 
     def validate(self, attrs):
-        username = attrs.get('email')
-        password = attrs.get('password')
-        request = self.context.get('request')
+        username = attrs.get("email")
+        password = attrs.get("password")
+        request = self.context.get("request")
 
         if username and password:
-            user = authenticate(request=request,
-                                username=username, password=password)
+            user = authenticate(request=request, username=username, password=password)
 
             # The authenticate call simply returns None for is_active=False
             # users. (Assuming the default ModelBackend authentication
             # backend.)
             if not request.user.is_verified:
-                msg = _('Please verify your email and try again.')
-                raise serializers.ValidationError(msg, code='authorization', )
+                msg = _("Please verify your email and try again.")
+                raise serializers.ValidationError(
+                    msg,
+                    code="authorization",
+                )
 
             if not request.user.is_active:
-                msg = _('Your account has been disabled.')
-                raise serializers.ValidationError(msg, code='authorization', )
+                msg = _("Your account has been disabled.")
+                raise serializers.ValidationError(
+                    msg,
+                    code="authorization",
+                )
 
             if not user:
-                msg = _('Unable to log in with provided credentials.')
-                raise serializers.ValidationError(msg, code='authorization')
+                msg = _("Unable to log in with provided credentials.")
+                raise serializers.ValidationError(msg, code="authorization")
         else:
             msg = _('Must include "username" and "password".')
-            raise serializers.ValidationError(msg, code='authorization')
+            raise serializers.ValidationError(msg, code="authorization")
 
-        attrs['user'] = user
+        attrs["user"] = user
         return attrs
 
 
@@ -104,27 +110,33 @@ class JwtSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
 
         if not self.user.is_verified:
-
-            msg = _('Please verify your email and try again.')
+            msg = _("Please verify your email and try again.")
 
             token = generate_token(self.user)
 
-            send_email_function(['mehran613.niakan@gmail.com'],
-                                'blog@info.com',
-                                'account verify',
-                                message="None",
-                                email_type='html',
-                                template='emails/account_verify.tpl',
-                                context={
-                                    'user': self.user,
-                                    'activation_link': f'https://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
-                                }
-                                )
-            raise serializers.ValidationError(msg, code='authorization', )
+            send_email_function(
+                ["mehran613.niakan@gmail.com"],
+                "blog@info.com",
+                "account verify",
+                message="None",
+                email_type="html",
+                template="emails/account_verify.tpl",
+                context={
+                    "user": self.user,
+                    "activation_link": f"https://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}",
+                },
+            )
+            raise serializers.ValidationError(
+                msg,
+                code="authorization",
+            )
 
         if not self.user.is_active:
-            msg = _('Your account has been disabled.')
-            raise serializers.ValidationError(msg, code='authorization', )
+            msg = _("Your account has been disabled.")
+            raise serializers.ValidationError(
+                msg,
+                code="authorization",
+            )
 
         refresh = self.get_token(self.user)
 
@@ -132,7 +144,7 @@ class JwtSerializer(TokenObtainPairSerializer):
         data["access"] = str(refresh.access_token)
         data["email"] = attrs["email"]
 
-        User.objects.filter(id = self.user.id).update(last_login = timezone.now())
+        User.objects.filter(id=self.user.id).update(last_login=timezone.now())
 
         return data
 
@@ -142,36 +154,40 @@ class ChangePasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
 
     def validate(self, attrs):
-        user = self.context['request'].user
+        user = self.context["request"].user
 
-        if not user.check_password(attrs['old_password']):
-            raise serializers.ValidationError({
-                'old_password': 'Old Password is Wrong'
-            })
+        if not user.check_password(attrs["old_password"]):
+            raise serializers.ValidationError({"old_password": "Old Password is Wrong"})
 
         try:
-            validate_password(attrs['new_password'], user)
+            validate_password(attrs["new_password"], user)
         except ValidationError as e:
-            raise serializers.ValidationError({
-                'new_password': e.messages
-            })
+            raise serializers.ValidationError({"new_password": e.messages})
 
         return attrs
 
     def save(self):
-        user = self.context['request'].user
-        user.set_password(self.validated_data['new_password'])
+        user = self.context["request"].user
+        user.set_password(self.validated_data["new_password"])
         user.save()
         return user
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(source='user.id', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
-    is_active = serializers.BooleanField(source='user.is_active', read_only=True)
-    is_staff = serializers.BooleanField(source='user.is_staff', read_only=True)
+    id = serializers.UUIDField(source="user.id", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    is_active = serializers.BooleanField(source="user.is_active", read_only=True)
+    is_staff = serializers.BooleanField(source="user.is_staff", read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'email', 'is_active', 'is_staff', 'first_name', 'last_name', 'birth_date']
-        read_only_fields = ['id', 'email', 'is_active', 'is_staff']
+        fields = [
+            "id",
+            "email",
+            "is_active",
+            "is_staff",
+            "first_name",
+            "last_name",
+            "birth_date",
+        ]
+        read_only_fields = ["id", "email", "is_active", "is_staff"]

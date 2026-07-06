@@ -7,4 +7,3 @@ class OwnerOnly(permissions.BasePermission):
             return True
 
         return obj.user.user == request.user
-
