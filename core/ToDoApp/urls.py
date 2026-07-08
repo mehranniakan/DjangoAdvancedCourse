@@ -3,6 +3,8 @@ from django.urls import path, include
 from . import views
 from .views import update_task_status
 
+app_name = "ToDoApp"
+
 urlpatterns = [
     path("", views.DashboardView.as_view(), name="dashboard"),
     path("tasks/create/", views.CreateTasksView.as_view(), name="add_task"),

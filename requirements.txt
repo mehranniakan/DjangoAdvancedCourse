@@ -15,3 +15,7 @@ pygments
 drf-yasg[validation]
 djangorestframework-simplejwt
 django-mail-templated
+
+# test Module
+pytest-django
+pytest

@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from jwt import exceptions
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -11,7 +10,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
-
+from rest_framework.authtoken.models import Token
 from .serializers import *
 from ...models import *
 
@@ -54,8 +53,13 @@ class DiscardTokenApi(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        request.user.auth_token.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        tk = Token.objects.filter(user=request.user)
+        if tk.exists():
+            tk.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 
 class ChangePasswordApi(GenericAPIView):

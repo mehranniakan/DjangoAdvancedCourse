@@ -6,8 +6,8 @@ from blog.models import Posts, Category
 
 class PostSerializer(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField(source="get_snippet", read_only=True)
-    category = serializers.SlugRelatedField(
-        queryset=Category.objects.all(), slug_field="name"
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all()
     )
     url = serializers.SerializerMethodField(method_name="get_url")
 

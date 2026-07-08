@@ -6,7 +6,7 @@ from account.models import UserProfile
 
 class TaskSerializer(serializers.ModelSerializer):
     abs_url = serializers.HyperlinkedIdentityField(
-        view_name="Task-detail", read_only=True
+        view_name="ToDoApp:api-v1:Task-detail", read_only=True
     )
 
     class Meta:

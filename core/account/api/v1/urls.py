@@ -1,7 +1,10 @@
 from django.urls import path
-
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+    TokenVerifyView,
+)
 from .views import *
-
+app_name = "api-v1"
 urlpatterns = [
     # Auth urls
     path("register/", RegisterApi.as_view(), name="register_api"),
