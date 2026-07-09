@@ -2,22 +2,30 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Docker compose
-      run: docker compose up -d
-      
-    - name: Run Tests and flake
-      run: docker compose exec backend sh -c "flake8 && pytest ."
-    
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker compose build --no-cache
+
+      - name: Start containers
+        run: docker compose up -d
+
+      - name: Check installed packages
+        run: docker compose exec -T backend pip freeze
+
+      - name: Run Tests and flake8
+        run: docker compose exec -T backend sh -c "flake8 && pytest ."
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down
