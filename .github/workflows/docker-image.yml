@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Docker compose
+      run: docker compose up -d
+      
+    - name: Run Tests and flake
+      run: docker compose exec backend sh -c "flake8 && pytest ."
+    
