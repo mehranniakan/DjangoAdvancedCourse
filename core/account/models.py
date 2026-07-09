@@ -5,7 +5,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-
 class CustomUserManager(BaseUserManager):
     """
     Custom user model manager where email is the unique identifiers
@@ -71,4 +70,3 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
-        return self.email
