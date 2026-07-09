@@ -1,11 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .pagination import *
+from .pagination import DefaultPagination
 from .permissions import OwnerOnlyPermission
-from .serializers import *
-from ...models import Posts
+from .serializers import CategorySerializer, PostSerializer
+from ...models import Posts, Category
 
 # @api_view(['POST', 'GET', 'PUT', 'DELETE'])
 # def posts(request):

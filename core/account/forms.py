@@ -30,7 +30,9 @@ class UserRegisterForm(UserCreationForm):
 
     birth_date = forms.DateField(
         widget=forms.DateInput(
-            attrs={"type": "date", "class": "form-control", "placeholder": "تاریخ تولد"}
+            attrs={"type": "date",
+                   "class": "form-control",
+                   "placeholder": "تاریخ تولد"}
         ),
         required=False,
         help_text="فرمت: YYYY-MM-DD",
@@ -79,10 +81,6 @@ class UserRegisterForm(UserCreationForm):
             )
 
     def clean(self):
-        first_name = self.cleaned_data.get("first_name")
-        last_name = self.cleaned_data.get("last_name")
-        birth_date = self.cleaned_data.get("birth_date")
-        email = self.cleaned_data.get("email")
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
 
@@ -142,7 +140,6 @@ class LoginForm(forms.Form):
         password = cleaned_data.get("password")
 
         if email and password:
-
             user = authenticate(email=email, password=password)
 
             if user is None:

@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import *
+from .views import PostApi, CategoryApi
 
 app_name = "api-v1"
 
@@ -11,6 +11,12 @@ urlpatterns = router.urls
 
 # urlpatterns = [
 # path('post', posts, name='views_post'),
-# path('PostApi/', PostListCreateApi.as_view(), name='views_PostApi'),
-# path('PostApi/<uuid:pk>/',PostRetrieveUpdateDestroyApi.as_view(), name='views_PostApi'),
+
+# path('PostApi/',
+# PostListCreateApi.as_view(),
+# name='views_PostApi'),
+
+# path('PostApi/<uuid:pk>/',
+# PostRetrieveUpdateDestroyApi.as_view(),
+# name='views_PostApi'),
 # ]

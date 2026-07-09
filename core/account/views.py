@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, CreateView
 
-from .forms import *
+from .forms import LoginForm, UserRegisterForm
 
 
 # Create your views here.
@@ -27,12 +27,10 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        print("form valid")
-        user = form.save()
+        form.save()
         return redirect("login")
 
     def form_invalid(self, form):
-        print(form.errors)
         return redirect("register")
 
 

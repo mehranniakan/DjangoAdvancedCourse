@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from jwt import exceptions
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -10,9 +11,15 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
-from rest_framework.authtoken.models import Token
-from .serializers import *
-from ...models import *
+
+from .serializers import (RegisterSerializer,
+                          AuthTokenSerializer,
+                          JwtSerializer,
+                          ChangePasswordSerializer,
+                          ProfileSerializer)
+
+from ...models import (User,
+                       UserProfile)
 
 
 class RegisterApi(GenericAPIView):
@@ -20,9 +27,12 @@ class RegisterApi(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user_serializer = RegisterSerializer(data=request.data)
-        user_serializer.is_valid(raise_exception=True)
+        user_serializer.is_valid(
+            raise_exception=True
+        )
         user_serializer.save()
-        return Response(user_serializer.validated_data, status=status.HTTP_201_CREATED)
+        return Response(user_serializer.validated_data,
+                        status=status.HTTP_201_CREATED)
 
 
 class AuthTokenApi(ObtainAuthToken):
@@ -30,12 +40,15 @@ class AuthTokenApi(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-            data=request.data, context={"request": request}
+            data=request.data,
+            context={"request": request}
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "user_id": user.pk, "email": user.email})
+        return Response({"token": token.key,
+                         "user_id": user.pk,
+                         "email": user.email})
 
 
 class JwtAuthToken(TokenObtainPairView):
@@ -59,7 +72,6 @@ class DiscardTokenApi(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
 
 
 class ChangePasswordApi(GenericAPIView):
@@ -87,15 +99,12 @@ class ProfileApi(RetrieveUpdateAPIView):
 
 
 class VerifyAccountApi(APIView):
-
     def get(self, request):
 
         token = request.query_params.get("token")
 
         if token:
-
             try:
-
                 token = AccessToken(token)
 
             except exceptions.ExpiredSignatureError:
@@ -118,7 +127,8 @@ class VerifyAccountApi(APIView):
             else:
                 user_obj.is_verified = True
                 user_obj.save()
-                return Response({"Msg": "User is verified"}, status=status.HTTP_200_OK)
+                return Response({"Msg": "User is verified"},
+                                status=status.HTTP_200_OK)
 
             return Response(status=status.HTTP_200_OK)
         else:

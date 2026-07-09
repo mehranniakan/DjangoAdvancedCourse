@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from django.urls import reverse
 from account.models import User, UserProfile
 from functions import send_email_function, generate_token
 
@@ -17,7 +17,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     confirm_password = serializers.CharField(max_length=255, write_only=True)
     password = serializers.CharField(
-        max_length=255, write_only=True, validators=[validate_password]
+        max_length=255,
+        write_only=True,
+        validators=[validate_password]
     )
 
     class Meta:
@@ -107,7 +109,6 @@ class AuthTokenSerializer(serializers.Serializer):
 
 
 class JwtSerializer(TokenObtainPairSerializer):
-
     def validate(self, attrs):
 
         data = super().validate(attrs)
@@ -115,7 +116,9 @@ class JwtSerializer(TokenObtainPairSerializer):
         username = attrs.get("email")
         password = attrs.get("password")
 
-        user = authenticate(request=self.context.get("request"), username=username, password=password)
+        user = authenticate(
+            request=self.context.get("request"), username=username, password=password
+        )
 
         if not user:
             msg = _("No user found with provided credentials.")
@@ -128,6 +131,10 @@ class JwtSerializer(TokenObtainPairSerializer):
             msg = _("Please verify your email and try again.")
 
             token = generate_token(self.user)
+            host_name = 'https://127.0.0.1:8000'
+            verify_url = reverse('account:api-v1:account_verify_jwt')
+
+            verify_url = f"{host_name}{verify_url}?token={token}"
 
             send_email_function(
                 ["mehran613.niakan@gmail.com"],
@@ -138,7 +145,7 @@ class JwtSerializer(TokenObtainPairSerializer):
                 template="emails/account_verify.tpl",
                 context={
                     "user": self.user,
-                    "activation_link": f"https://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}",
+                    "activation_link": verify_url,
                 },
             )
             raise serializers.ValidationError(
@@ -157,7 +164,7 @@ class JwtSerializer(TokenObtainPairSerializer):
 
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)
-        data['email'] = user.email
+        data["email"] = user.email
 
         user.last_login = timezone.now()
         user.save()
@@ -173,7 +180,9 @@ class ChangePasswordSerializer(serializers.Serializer):
         user = self.context["request"].user
 
         if not user.check_password(attrs["old_password"]):
-            raise serializers.ValidationError({"old_password": "Old Password is Wrong"})
+            raise serializers.ValidationError(
+                {"old_password": "Old Password is Wrong"}
+            )
 
         try:
             validate_password(attrs["new_password"], user)

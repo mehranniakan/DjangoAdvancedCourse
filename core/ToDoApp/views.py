@@ -5,9 +5,9 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
-
+from .models import Task
 from account.models import UserProfile
-from .forms import *
+from .forms import TaskForm
 
 
 # Create your views here.
