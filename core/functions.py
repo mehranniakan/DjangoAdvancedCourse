@@ -33,6 +33,7 @@ def send_email_function(
             fail_silently=False,
         )
     elif email_type == "html":
+
         html = render_to_string(template, context)
 
         email = EmailMultiAlternatives(

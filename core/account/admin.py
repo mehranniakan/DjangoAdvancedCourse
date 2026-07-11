@@ -13,6 +13,7 @@ class UserAdmin(admin.ModelAdmin):
         "is_staff",
         "is_superuser",
         "is_active",
+        "is_verified",
         "created_date",
         "updated_date",
     )
@@ -22,7 +23,7 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ("-created_date",)
     fieldsets = (
         ("User Info", {"fields": ("email", "password")}),
-        ("User Status", {"fields": ("is_staff", "is_superuser", "is_active")}),
+        ("User Status", {"fields": ("is_staff", "is_superuser", "is_active","is_verified")}),
         ("Permissions & Group", {"fields": ("groups", "user_permissions")}),
     )
 

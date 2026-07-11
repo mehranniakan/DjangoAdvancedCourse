@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,7 +24,9 @@ SECRET_KEY = "django-insecure-#hy=0s#tdc@t%^g&ez^)z3wy(m2)439aa9swhz#rb9oxpt_)zq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*"
+]
 
 # Application definition
 
@@ -36,8 +38,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
+    "django_celery_beat",
     "mail_templated",
     "django_filters",
     "drf_yasg",
@@ -54,6 +58,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -160,3 +166,19 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 
 DEFAULT_FROM_EMAIL = "noreply@example.com"
+
+# Cors Headers Conf
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Celery Conf
+CELERY_BROKER_URL = "redis://redis:6379/0"
+
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Celery Beat conf
+CELERY_BEAT_SCHEDULE = {
+    "clear-task": {
+        "task": "account.tasks.clear_tasks",
+        "schedule": timedelta(minutes=10),
+    },
+}

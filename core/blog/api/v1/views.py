@@ -153,7 +153,7 @@ from ...models import Posts, Category
 class PostApi(viewsets.ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, OwnerOnlyPermission]
+    # permission_classes = [IsAuthenticatedOrReadOnly, OwnerOnlyPermission]
     filter_backends = (
         DjangoFilterBackend,
         filters.OrderingFilter,

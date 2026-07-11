@@ -8,7 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.urls import reverse
 from account.models import User, UserProfile
 from functions import send_email_function, generate_token
-
+from account.tasks import send_email
 
 class RegisterSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True)
@@ -136,7 +136,7 @@ class JwtSerializer(TokenObtainPairSerializer):
 
             verify_url = f"{host_name}{verify_url}?token={token}"
 
-            send_email_function(
+            send_email.delay(
                 ["mehran613.niakan@gmail.com"],
                 "blog@info.com",
                 "account verify",
@@ -144,7 +144,8 @@ class JwtSerializer(TokenObtainPairSerializer):
                 email_type="html",
                 template="emails/account_verify.tpl",
                 context={
-                    "user": self.user,
+                    "first_name": UserProfile.objects.get(user=self.user).first_name,
+                    "email": self.user.email,
                     "activation_link": verify_url,
                 },
             )

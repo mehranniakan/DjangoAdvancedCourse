@@ -16,6 +16,14 @@ drf-yasg[validation]
 djangorestframework-simplejwt
 django-mail-templated
 flake8
+Faker
+django-cors-headers
+locust
+celery[redis]
+django-celery-beat
+
+
+
 
 # test Module
 pytest-django

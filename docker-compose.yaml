@@ -2,6 +2,8 @@ services:
   backend:
     build: .
     container_name: backend
+    depends_on:
+      - redis
     command: manage.py runserver 0.0.0.0:8000
     volumes:
       - ./core:/app
@@ -10,6 +12,37 @@ services:
     environment:
       - SECRET_KEY=test
       - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - '6379:6379'
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    environment:
+      - REDIS_ARGS=--requirepass your_password_here --appendonly yes
+    restart: always
+
+  worker:
+    build: .
+    volumes:
+      - ./core:/app
+    depends_on:
+      - redis
+      - backend
+    command: -m celery -A core worker --loglevel=info
+
+  beat:
+    build: .
+    depends_on:
+      - redis
+      - worker
+    command: -m celery -A core beat -l info
+    volumes:
+      - ./core:/app
 
   smtp4dev:
     image: rnwood/smtp4dev:v3
@@ -34,6 +67,21 @@ services:
       #Specifies the server hostname. Used in auto-generated TLS certificate if enabled.
       - ServerOptions__HostName=smtp4dev
 
+  locust:
+    image: locustio/locust:latest
+    container_name: locust
+    depends_on:
+      - backend
+    working_dir: /mnt/locust
+    volumes:
+      - ./core:/mnt/locust
+    ports:
+      - "8089:8089"
+    command: >
+      -f /mnt/locust/locust/locustfile.py
+      --host=http://backend:8000
+
 
 volumes:
   smtp4dev-data:
+  redis-data:
