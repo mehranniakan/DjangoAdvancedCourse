@@ -36,7 +36,6 @@ def test_user_unverified():
 @pytest.fixture
 def test_token(test_user_verified,
                api_client):
-
     url = reverse("account:api-v1:auth_token")
     params = {
         "email": test_user_verified.user.email,
@@ -48,7 +47,6 @@ def test_token(test_user_verified,
 @pytest.fixture
 def test_jwt(test_user_verified,
              api_client):
-
     url = reverse("account:api-v1:token_obtain_pair")
     params = {
         "email": test_user_verified.user.email,
@@ -60,7 +58,6 @@ def test_jwt(test_user_verified,
 
 @pytest.fixture
 def test_verify_token(test_user_unverified):
-
     token = generate_token(test_user_unverified.user)
     return token
 
@@ -72,7 +69,6 @@ class TestAccount:
     def test_account_signup_valid_data(self,
                                        api_client,
                                        test_user_verified):
-
         url = reverse("account:api-v1:register_api")
         params = {
             "email": "tester@tester.com",
@@ -89,7 +85,6 @@ class TestAccount:
     def test_account_signup_invalid_data(self,
                                          api_client,
                                          test_user_verified):
-
         url = reverse("account:api-v1:register_api")
         params = {
             "email": "tester@tester.com",
@@ -106,7 +101,6 @@ class TestAccount:
     def test_account_signup_invalid_method(self,
                                            api_client,
                                            test_user_verified):
-
         url = reverse("account:api-v1:register_api")
         params = {
             "email": "tester@tester.com",
@@ -124,7 +118,6 @@ class TestAccount:
     def test_account_login_valid_data(self,
                                       api_client,
                                       test_user_verified):
-
         url = reverse("account:api-v1:auth_token")
         params = {
             "email": test_user_verified.user.email,
@@ -136,7 +129,6 @@ class TestAccount:
     def test_account_login_invalid_data(self,
                                         api_client,
                                         test_user_verified):
-
         url = reverse("account:api-v1:auth_token")
         params = {
             "email": test_user_verified.user.email,
@@ -148,7 +140,6 @@ class TestAccount:
     def test_account_login_invalid_method(self,
                                           api_client,
                                           test_user_verified):
-
         url = reverse("account:api-v1:auth_token")
         params = {
             "email": test_user_verified.user.email,
@@ -161,7 +152,6 @@ class TestAccount:
     def test_account_login_jwt_valid_data(self,
                                           api_client,
                                           test_user_verified):
-
         url = reverse("account:api-v1:token_obtain_pair")
 
         params = {
@@ -171,14 +161,11 @@ class TestAccount:
 
         post = api_client.post(url, params)
 
-        assert (post.status_code == 201 and
-                post.data["access"] and post.data["refresh"]
-                )
+        assert (post.status_code == 201 and post.data["access"] and post.data["refresh"])
 
     def test_account_login_jwt_invalid_data(self,
                                             api_client,
                                             test_user_verified):
-
         url = reverse("account:api-v1:token_obtain_pair")
         params = {
             "email": test_user_verified.user.email,
@@ -191,7 +178,6 @@ class TestAccount:
     def test_account_logout_valid_data(self,
                                        api_client,
                                        test_token):
-
         url = reverse("account:api-v1:discard_token")
 
         api_client.credentials(HTTP_AUTHORIZATION=f"Token {test_token}")
@@ -202,7 +188,6 @@ class TestAccount:
     def test_account_logout_invalid_data(self,
                                          api_client,
                                          test_token):
-
         url = reverse("account:api-v1:discard_token")
 
         api_client.credentials(HTTP_AUTHORIZATION="Token 74516")
@@ -214,7 +199,6 @@ class TestAccount:
     def test_account_verify_valid_data(self,
                                        api_client,
                                        test_verify_token):
-
         host_name = 'https://127.0.0.1:8000'
         verify_url = reverse('account:api-v1:account_verify_jwt')
 

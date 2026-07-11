@@ -1,5 +1,7 @@
 import uuid
 
+import requests
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -16,13 +18,13 @@ def is_valid_uuid(uuid_to_test, version=4):
 
 
 def send_email_function(
-    to: list,
-    sender: str,
-    subject: str,
-    message: str,
-    email_type="txt",
-    template=None,
-    context=None,
+        to: list,
+        sender: str,
+        subject: str,
+        message: str,
+        email_type="txt",
+        template=None,
+        context=None,
 ):
     if email_type == "txt":
         send_mail(
@@ -51,3 +53,23 @@ def generate_token(user: object):
     token = RefreshToken.for_user(user)
     token = token.access_token
     return token
+
+
+def get_weather(lat, lng):
+    if cache.get(f'weather_{lat}_{lng}') is None:
+        base_url = 'https://api.openweathermap.org/data/2.5/weather'
+        params = {
+            'lat': lat,
+            'lon': lng,
+            'units': 'metric',
+            'appid': '3dd602f347eb28e75bed50d50a5bd634'
+        }
+        response = requests.get(base_url, params=params, timeout=10)
+        response.raise_for_status()
+        response = response.json()
+        cache.set(f'weather_{lat}_{lng}', response, timeout=20 * 60)
+
+        return response
+    else:
+        print(cache.get(f'weather_{lat}_{lng}'))
+        return cache.get(f'weather_{lat}_{lng}')

@@ -16,7 +16,7 @@ class TaskForm(forms.ModelForm):
                     return title
                 else:
                     if Task.objects.filter(
-                        title__iexact=title, user__user=self.user, status=False
+                            title__iexact=title, user__user=self.user, status=False
                     ).exists():
                         raise forms.ValidationError(
                             "You have already a open task with this title."

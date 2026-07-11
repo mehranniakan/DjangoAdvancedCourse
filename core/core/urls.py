@@ -41,6 +41,7 @@ urlpatterns = [
     path("account/", include("account.urls")),
     path("blog/", include("blog.urls")),
     path("todo/", include("ToDoApp.urls")),
+    path("openweather/", include("OpenWeather.urls")),
 
     path("swagger.json/",
          schema_view.without_ui(cache_timeout=0),

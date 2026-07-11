@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "account",
     "blog",
     "ToDoApp",
+    "OpenWeather",
 ]
 
 MIDDLEWARE = [
@@ -181,4 +182,16 @@ CELERY_BEAT_SCHEDULE = {
         "task": "account.tasks.clear_tasks",
         "schedule": timedelta(minutes=10),
     },
+    # "get_weather": {
+    #     "task": "OpenWeather.tasks.get_weather",
+    #     "schedule": timedelta(seconds=30),
+    # }
+}
+
+# Redis Cache Conf
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/2",
+    }
 }

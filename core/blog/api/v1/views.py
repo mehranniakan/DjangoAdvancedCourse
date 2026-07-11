@@ -3,7 +3,6 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .pagination import DefaultPagination
-from .permissions import OwnerOnlyPermission
 from .serializers import CategorySerializer, PostSerializer
 from ...models import Posts, Category
 

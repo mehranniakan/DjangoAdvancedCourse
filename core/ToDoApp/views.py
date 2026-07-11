@@ -5,9 +5,10 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
-from .models import Task
+
 from account.models import UserProfile
 from .forms import TaskForm
+from .models import Task
 
 
 # Create your views here.
@@ -24,8 +25,7 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         if q:
             return Task.objects.filter(
-                (Q(title__icontains=q) | Q(description__icontains=q))
-                & Q(user__user=self.request.user)
+                (Q(title__icontains=q) | Q(description__icontains=q)) & Q(user__user=self.request.user)
             ).order_by("-created_date")
         else:
             return Task.objects.filter(user__user=self.request.user).order_by(

@@ -1,11 +1,9 @@
 import random
 
 from django.core.management.base import BaseCommand
-from django.db.models import Model
 from faker import Faker
 
 from ToDoApp.models import Task
-from blog.models import Category, Posts
 from account.models import UserProfile, User
 
 
@@ -13,12 +11,11 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
-        self.fake = Faker(['en_US','fa_IR'])
+        self.fake = Faker(['en_US', 'fa_IR'])
 
     def handle(self, *args, **options):
 
-
-        for u in range(1,5):
+        for u in range(1, 5):
             first_name = self.fake.first_name()
             last_name = self.fake.last_name()
             birth_date = self.fake.date_of_birth()
@@ -37,12 +34,12 @@ class Command(BaseCommand):
                                                  last_name=last_name,
                                                  birth_date=birth_date)
 
-            for t in range(1,5):
+            for t in range(1, 5):
                 title = self.fake.sentence(nb_words=3)
                 description = self.fake.paragraph(nb_sentences=3)
                 status = random.choice([True, False])
 
-                task = Task.objects.create(user=profile,
-                                            title=title,
-                                            description=description,
-                                            status=status)
+                Task.objects.create(user=profile,
+                                    title=title,
+                                    description=description,
+                                    status=status)

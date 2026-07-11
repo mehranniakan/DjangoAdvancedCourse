@@ -1,18 +1,17 @@
 import random
 
 from django.core.management.base import BaseCommand
-from django.db.models import Model
 from faker import Faker
 
-from blog.models import Category, Posts
 from account.models import UserProfile, User
+from blog.models import Category, Posts
 
 
 class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
-        self.fake = Faker(['en_US','fa_IR'])
+        self.fake = Faker(['en_US', 'fa_IR'])
         self.cat_list = ['Fun',
                          'Tech',
                          'Science',
@@ -23,9 +22,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for c in self.cat_list:
-            cats = Category.objects.get_or_create(name=c)
+            Category.objects.get_or_create(name=c)
 
-        for u in range(1,20):
+        for u in range(1, 20):
             first_name = self.fake.first_name()
             last_name = self.fake.last_name()
             birth_date = self.fake.date_of_birth()
@@ -44,17 +43,16 @@ class Command(BaseCommand):
                                                  last_name=last_name,
                                                  birth_date=birth_date)
 
-            for p in range(1,20):
+            for p in range(1, 20):
                 title = self.fake.sentence(nb_words=3)
                 content = self.fake.paragraph(nb_sentences=3)
                 category = Category.objects.get(name=random.choice(self.cat_list))
                 slug = f'{title}-{category.name}'
                 status = random.choice([True, False])
 
-                post = Posts.objects.create(author=profile,
-                                            title=title,
-                                            content=content,
-                                            category=category,
-                                            slug=slug,
-                                            status=status)
-
+                Posts.objects.create(author=profile,
+                                     title=title,
+                                     content=content,
+                                     category=category,
+                                     slug=slug,
+                                     status=status)

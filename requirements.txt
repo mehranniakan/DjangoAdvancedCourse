@@ -21,7 +21,7 @@ django-cors-headers
 locust
 celery[redis]
 django-celery-beat
-
+django-redis
 
 
 
