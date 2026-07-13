@@ -24,7 +24,8 @@ celery[redis]
 django-celery-beat
 django-redis
 
-
+# db
+psycopg2-binary
 
 # test Module
 pytest-django

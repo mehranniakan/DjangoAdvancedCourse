@@ -2,7 +2,10 @@ services:
   backend:
     build: .
     container_name: backend
+    env_file:
+      - .env.stage
     depends_on:
+      - db
       - redis
     command: >
       sh -c "
@@ -14,16 +17,33 @@ services:
       - ./core:/app
       - static_volume:/app/static
       - media_volume:/app/media
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
     expose:
       - "8000"
-    environment:
-      SECRET_KEY: test
-      DEBUG: "False"
-      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    env_file:
+      - .env.stage
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
 
   nginx:
     image: nginx
     container_name: nginx
+    depends_on:
+      - backend
     restart: always
     ports:
       - "80:80"
@@ -37,6 +57,8 @@ services:
     container_name: redis
     ports:
       - '6379:6379'
+    env_file:
+      - .env.stage
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - redis-data:/data
@@ -47,26 +69,34 @@ services:
   worker:
     build: .
     container_name: worker
+    env_file:
+      - .env.stage
     depends_on:
       - redis
       - backend
     command: python -m celery -A core worker --loglevel=info
     volumes:
       - ./core:/app
+    restart: unless-stopped
 
   beat:
     build: .
     container_name: beat
+    env_file:
+      - .env.stage
     depends_on:
       - redis
       - worker
     command: python -m celery -A core beat --loglevel=info
     volumes:
       - ./core:/app
+    restart: unless-stopped
 
   locust:
     image: locustio/locust:latest
     container_name: locust
+    env_file:
+      - .env.stage
     depends_on:
       - backend
     working_dir: /mnt/locust
@@ -83,3 +113,4 @@ volumes:
   redis-data:
   static_volume:
   media_volume:
+  postgres_data:
