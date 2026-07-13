@@ -4,7 +4,7 @@ services:
     container_name: backend
     depends_on:
       - redis
-    command: manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./core:/app
     ports:
@@ -33,14 +33,14 @@ services:
     depends_on:
       - redis
       - backend
-    command: -m celery -A core worker --loglevel=info
+    command: python celery -A core worker --loglevel=info
 
   beat:
     build: .
     depends_on:
       - redis
       - worker
-    command: -m celery -A core beat -l info
+    command: python celery -A core beat -l info
     volumes:
       - ./core:/app
 
