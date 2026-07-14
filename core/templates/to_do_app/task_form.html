@@ -15,6 +15,13 @@
     <form method="post">
 
         {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <div class="form-group">
 
@@ -25,6 +32,13 @@
             </label>
 
             {{ form.title }}
+            {% if form.title.errors %}
+            <div class="field-errors">
+                {% for error in form.title.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
 
         </div>
 
@@ -37,6 +51,14 @@
             </label>
 
             {{ form.description }}
+            {% if form.description.errors %}
+            <div class="field-errors">
+                {% for error in form.description.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
+
 
         </div>
 

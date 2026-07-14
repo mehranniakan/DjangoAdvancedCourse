@@ -61,6 +61,11 @@ class UpdateTasksView(UpdateView, LoginRequiredMixin):
     success_url = reverse_lazy('dashboard')
     login_url = reverse_lazy('login')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         user_profile = UserProfile.objects.get(user=self.request.user)
         task = form.save(commit=False)
@@ -69,7 +74,7 @@ class UpdateTasksView(UpdateView, LoginRequiredMixin):
         return redirect('dashboard')
 
     def form_invalid(self, form):
-        return redirect('dashboard')
+        return super().form_invalid(form)
 
 
 class DeleteTasksView(DeleteView, LoginRequiredMixin):

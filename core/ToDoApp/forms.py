@@ -7,18 +7,19 @@ from account.models import User, UserProfile
 
 
 class TaskForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user',None)
         super().__init__(*args, **kwargs)
 
     def clean_title(self):
-        if self.instance:
+        if self.instance.id:
             title = self.cleaned_data.get('title')
             if title:
                 if self.instance.title == title:
                     return title
                 else:
-                    if Task.objects.filter(title__iexact=title, user__user=self.user, status=False).exists():
+                    if Task.objects.filter(title=title, user__user=self.user, status=False).exists():
                         raise forms.ValidationError('You have already a open task with this title.')
                     else:
                         return title
