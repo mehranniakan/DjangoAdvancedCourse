@@ -30,44 +30,39 @@ class UserRegisterForm(UserCreationForm):
 
     birth_date = forms.DateField(
         widget=forms.DateInput(
-            attrs={
-                "type": "date",
-                "class": "form-control",
-                "placeholder": "تاریخ تولد"
-            }
+            attrs={"type": "date", "class": "form-control", "placeholder": "تاریخ تولد"}
         ),
         required=False,
-        help_text="فرمت: YYYY-MM-DD"
+        help_text="فرمت: YYYY-MM-DD",
     )
 
-
     def clean_first_name(self):
-        first_name = self.cleaned_data.get('first_name')
+        first_name = self.cleaned_data.get("first_name")
         if first_name:
             return first_name
         else:
-            raise forms.ValidationError('Please enter a first name.')
+            raise forms.ValidationError("Please enter a first name.")
 
     def clean_last_name(self):
-        last_name = self.cleaned_data.get('last_name')
+        last_name = self.cleaned_data.get("last_name")
         if last_name:
             return last_name
         else:
-            raise forms.ValidationError('Please enter a last name.')
+            raise forms.ValidationError("Please enter a last name.")
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get("email")
         if email:
             check_dup = User.objects.filter(email__iexact=email)
             if check_dup.exists():
-                raise forms.ValidationError('This email is already registered.')
+                raise forms.ValidationError("This email is already registered.")
             else:
                 return email
         else:
-            raise forms.ValidationError('Please enter a valid email.')
+            raise forms.ValidationError("Please enter a valid email.")
 
     def clean_birth_date(self):
-        birth_date = self.cleaned_data.get('birth_date')
+        birth_date = self.cleaned_data.get("birth_date")
         if birth_date:
             return birth_date
         else:
@@ -75,27 +70,25 @@ class UserRegisterForm(UserCreationForm):
             return birth_date
 
     def clean_password1(self):
-        password1 = self.cleaned_data.get('password1')
+        password1 = self.cleaned_data.get("password1")
         if password1 and len(password1) >= 8:
             return password1
         else:
-            raise forms.ValidationError('Please enter a password at least 8 characters.')
+            raise forms.ValidationError(
+                "Please enter a password at least 8 characters."
+            )
 
     def clean(self):
-        first_name = self.cleaned_data.get('first_name')
-        last_name = self.cleaned_data.get('last_name')
-        birth_date = self.cleaned_data.get('birth_date')
-        email = self.cleaned_data.get('email')
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
 
         if password1 and password2 and password1 != password2:
-            raise forms.ValidationError('Passwords do not match.')
+            raise forms.ValidationError("Passwords do not match.")
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
-        user.email = self.cleaned_data['email']
+        user.set_password(self.cleaned_data["password1"])
+        user.email = self.cleaned_data["email"]
 
         if commit:
             user.save()
@@ -111,7 +104,7 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password1', 'password2')
+        fields = ("email", "password1", "password2")
 
 
 class LoginForm(forms.Form):
@@ -120,43 +113,39 @@ class LoginForm(forms.Form):
             attrs={
                 "name": "email",
                 "required": True,
-                "placeholder": "example@email.com"
+                "placeholder": "example@email.com",
             }
         )
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={
-                "name": "password",
-                "required": True,
-                "placeholder": "********"
-            }
+            attrs={"name": "password", "required": True, "placeholder": "********"}
         )
     )
 
     def clean_password(self):
-        password = self.cleaned_data.get('password')
+        password = self.cleaned_data.get("password")
 
         if password:
             return password
         else:
-            raise forms.ValidationError('Please enter a password')
+            raise forms.ValidationError("Please enter a password")
 
     def clean(self):
         cleaned_data = super().clean()
 
-        email = cleaned_data.get('email')
-        password = cleaned_data.get('password')
+        email = cleaned_data.get("email")
+        password = cleaned_data.get("password")
 
         if email and password:
 
             user = authenticate(email=email, password=password)
 
             if user is None:
-                raise forms.ValidationError('email or password is incorrect.')
+                raise forms.ValidationError("email or password is incorrect.")
             elif not user.is_active:
-                raise forms.ValidationError('Your account is disabled.')
+                raise forms.ValidationError("Your account is disabled.")
             else:
-                cleaned_data['user'] = user
+                cleaned_data["user"] = user
 
         return cleaned_data

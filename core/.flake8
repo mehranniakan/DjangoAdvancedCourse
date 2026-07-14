@@ -1,0 +1,21 @@
+[flake8]
+
+max-line-length = 86
+
+ignore = E117,E501,E265
+
+exclude =
+    .git,
+    __pycache__,
+    migrations,
+    venv,
+    env,
+    .venv,
+    static,
+    media,
+    __init__.py,
+    settings.py
+
+
+per-file-ignores =
+    core/settings.py:F401,F403,F405,E501

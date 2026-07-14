@@ -1,8 +1,9 @@
-import profile
 import uuid
+
 from django.db import models
 from django.urls import reverse
-from account.models import  UserProfile
+
+from account.models import UserProfile
 
 
 # Create your models here.
@@ -11,8 +12,10 @@ class Posts(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     content = models.TextField()
-    category = models.ForeignKey('Category', on_delete=models.CASCADE,null=True,blank=True)
-    image = models.ImageField(null=True,blank=True)
+    category = models.ForeignKey(
+        "Category", on_delete=models.CASCADE, null=True, blank=True
+    )
+    image = models.ImageField(null=True, blank=True)
     status = models.BooleanField(default=True)
     slug = models.SlugField(max_length=200, unique=True)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -27,11 +30,12 @@ class Posts(models.Model):
             kwargs={
                 "pk": self.pk,
                 # "slug": self.slug,
-            }
+            },
         )
 
     def get_snippet(self):
-        return self.content[:50]+'...'
+        return self.content[:50] + "..."
+
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -42,4 +46,3 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
