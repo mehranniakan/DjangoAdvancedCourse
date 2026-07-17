@@ -132,3 +132,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
 AUTH_USER_MODEL = "account.User"
+
+# DRF Conf
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # همه APIها نیاز به لاگین دارند
+    ]
+}
+
+# Swagger Conf
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+}
