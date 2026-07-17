@@ -91,7 +91,7 @@ def update_task_status(request, pk):
     if request.method == "POST":
         task = get_object_or_404(Task, id=pk, user__user=request.user)
 
-        task.status = True
+        task.status = not task.status
         task.save()
 
         if task.status:

@@ -76,6 +76,7 @@
         <div class="task-buttons">
 
             {% if not task.status %}
+
             <form action="{% url 'complete_task' pk=task.id %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-success">
@@ -86,7 +87,18 @@
             <a class="btn btn-warning" href="{% url 'edit_task' task.id %}">
                 ویرایش
             </a>
+
+            {% else %}
+
+            <form action="{% url 'complete_task' pk=task.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-success">
+                    باز کردن مجدد
+                </button>
+            </form>
+
             {% endif %}
+
 
             <form action="{% url 'delete_task' task.id %}" method="post">
                 {% csrf_token %}
