@@ -12,4 +12,5 @@ urlpatterns = [
         "tasks/delete/<uuid:pk>/", views.DeleteTasksView.as_view(), name="delete_task"
     ),
     path("api/v1/", include("ToDoApp.api.v1.urls")),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
