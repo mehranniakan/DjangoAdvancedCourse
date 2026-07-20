@@ -70,26 +70,46 @@ class AuthTokenSerializer(serializers.Serializer):
     def validate(self, attrs):
         username = attrs.get('email')
         password = attrs.get('password')
+
         request = self.context.get('request')
 
         if username and password:
+
             user = authenticate(request=request,
                                 username=username, password=password)
 
             # The authenticate call simply returns None for is_active=False
             # users. (Assuming the default ModelBackend authentication
             # backend.)
-            if not request.user.is_verified:
-                msg = _('Please verify your email and try again.')
-                raise serializers.ValidationError(msg, code='authorization', )
-
-            if not request.user.is_active:
-                msg = _('Your account has been disabled.')
-                raise serializers.ValidationError(msg, code='authorization', )
-
             if not user:
                 msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg, code='authorization')
+
+            if not user.is_verified:
+
+                msg = _('Please verify your email and try again.')
+
+                token = generate_token(user)
+
+                send_email_function(['mehran613.niakan@gmail.com'],
+                                    'blog@info.com',
+                                    'account verify',
+                                    message="None",
+                                    email_type='html',
+                                    template='emails/account_verify.tpl',
+                                    context={
+                                        'user': user,
+                                        'activation_link': f'http://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
+                                    }
+                                    )
+
+                raise serializers.ValidationError(msg, code='authorization', )
+
+            if not user.is_active:
+                msg = _('Your account has been disabled.')
+                raise serializers.ValidationError(msg, code='authorization', )
+
+
         else:
             msg = _('Must include "username" and "password".')
             raise serializers.ValidationError(msg, code='authorization')
@@ -99,11 +119,18 @@ class AuthTokenSerializer(serializers.Serializer):
 
 
 class JwtSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
 
+    def validate(self, attrs):
+        username = attrs.get('email')
+        password = attrs.get('password')
+        request = self.context.get('request')
+
+        user = authenticate(request=request,
+                            username=username, password=password)
         data = super().validate(attrs)
 
-        if not self.user.is_verified:
+
+        if not user.is_verified:
 
             msg = _('Please verify your email and try again.')
 
@@ -117,12 +144,12 @@ class JwtSerializer(TokenObtainPairSerializer):
                                 template='emails/account_verify.tpl',
                                 context={
                                     'user': self.user,
-                                    'activation_link': f'https://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
+                                    'activation_link': f'http://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
                                 }
                                 )
             raise serializers.ValidationError(msg, code='authorization', )
 
-        if not self.user.is_active:
+        if not user.is_active:
             msg = _('Your account has been disabled.')
             raise serializers.ValidationError(msg, code='authorization', )
 

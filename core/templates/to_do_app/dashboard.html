@@ -8,7 +8,7 @@
 
 <div class="top-bar">
 
-    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+    <form method="post" action="{% url 'account:logout' %}" style="display: inline;">
         {% csrf_token %}
         <button type="submit" class="logout-btn" title="خروج" style="background: none; border: none; cursor: pointer;">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
@@ -76,6 +76,7 @@
         <div class="task-buttons">
 
             {% if not task.status %}
+            
             <form method="post" action="{% url 'complete_task' pk=task.id %}">
                 {% csrf_token %}
                 <button class="btn btn-success">
@@ -86,7 +87,15 @@
             <a href="{% url 'edit_task' task.id %}" class="btn btn-warning">
                 ویرایش
             </a>
-            {% endif %}
+
+            {% else %}
+
+            <form method="post" action="{% url 'complete_task' pk=task.id %}">
+                {% csrf_token %}
+                <button class="btn btn-success">
+                    بازگردانی
+                </button>
+            </form>
 
             <form method="post" action="{% url 'delete_task' task.id %}">
                 {% csrf_token %}
@@ -94,6 +103,8 @@
                     حذف
                 </button>
             </form>
+            {% endif %}
+
 
         </div>
 

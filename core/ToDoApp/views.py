@@ -18,7 +18,7 @@ class DashboardView(LoginRequiredMixin, ListView):
     template_name = 'to_do_app/dashboard.html'
     paginate_by = 10
     context_object_name = 'tasks'
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('account:login')
 
     def get_queryset(self):
         q = self.request.GET.get('q','')
@@ -39,7 +39,7 @@ class CreateTasksView(CreateView, LoginRequiredMixin):
     template_name = 'to_do_app/task_form.html'
     form_class = TaskForm
     success_url = reverse_lazy('dashboard')
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('account:login')
 
     def form_valid(self, form):
         user_profile = UserProfile.objects.get(user=self.request.user)
@@ -59,7 +59,7 @@ class UpdateTasksView(UpdateView, LoginRequiredMixin):
     template_name = 'to_do_app/task_form.html'
     form_class = TaskForm
     success_url = reverse_lazy('dashboard')
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('account:login')
 
     def form_valid(self, form):
         user_profile = UserProfile.objects.get(user=self.request.user)
@@ -75,7 +75,7 @@ class UpdateTasksView(UpdateView, LoginRequiredMixin):
 class DeleteTasksView(DeleteView, LoginRequiredMixin):
     model = Task
     success_url = reverse_lazy('dashboard')
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('account:login')
 
 
 @login_required
@@ -83,7 +83,7 @@ def update_task_status(request, pk):
     if request.method == 'POST':
         task = get_object_or_404(Task, id=pk, user__user=request.user)
 
-        task.status = True
+        task.status = not task.status
         task.save()
 
         if task.status:

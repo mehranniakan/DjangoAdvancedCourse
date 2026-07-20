@@ -20,4 +20,6 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['user'] = UserProfile.objects.get(user=self.context['request'].user)
+        if Task.objects.filter(user=validated_data['user'], title=validated_data['title'], status=True).exists():
+            raise serializers.ValidationError('Task with this title already exists')
         return super().create(validated_data)

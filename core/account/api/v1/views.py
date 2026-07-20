@@ -44,6 +44,11 @@ class AuthTokenApi(ObtainAuthToken):
             'email': user.email
         })
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 
 class JwtAuthToken(TokenObtainPairView):
     serializer_class = JwtSerializer
@@ -52,6 +57,11 @@ class JwtAuthToken(TokenObtainPairView):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 
 class DiscardTokenApi(APIView):
