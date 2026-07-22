@@ -98,6 +98,9 @@ class AuthTokenSerializer(serializers.Serializer):
                 msg = _('Please verify your email and try again.')
 
                 token = generate_token(user)
+                active_link = 'http://127.0.0.1:8000/'
+                active_link = active_link + 'account/api/v1/token/jwt/verify_account/'
+                active_link = active_link + '?token=' + token
 
                 send_email_function(['mehran613.niakan@gmail.com'],
                                     'blog@info.com',
@@ -107,7 +110,7 @@ class AuthTokenSerializer(serializers.Serializer):
                                     template='emails/account_verify.tpl',
                                     context={
                                         'user': user,
-                                        'activation_link': f'http://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
+                                        'activation_link': active_link
                                     }
                                     )
 
@@ -116,7 +119,6 @@ class AuthTokenSerializer(serializers.Serializer):
             if not user.is_active:
                 msg = _('Your account has been disabled.')
                 raise serializers.ValidationError(msg, code='authorization', )
-
 
         else:
             msg = _('Must include "username" and "password".')
@@ -145,7 +147,9 @@ class JwtSerializer(TokenObtainPairSerializer):
             msg = _('Please verify your email and try again.')
 
             token = generate_token(self.user)
-
+            active_link = 'http://127.0.0.1:8000/'
+            active_link = active_link+'account/api/v1/token/jwt/verify_account/'
+            active_link = active_link+'?token=' + token
             send_email_function(['mehran613.niakan@gmail.com'],
                                 'blog@info.com',
                                 'account verify',
@@ -154,7 +158,7 @@ class JwtSerializer(TokenObtainPairSerializer):
                                 template='emails/account_verify.tpl',
                                 context={
                                     'user': self.user,
-                                    'activation_link': f'http://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
+                                    'activation_link': active_link
                                 }
                                 )
             raise serializers.ValidationError(msg, code='authorization', )

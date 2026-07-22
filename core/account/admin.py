@@ -23,7 +23,10 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ("-created_date",)
     fieldsets = (
         ("User Info", {"fields": ("email", "password")}),
-        ("User Status", {"fields": ("is_staff", "is_superuser", "is_active", "is_verified")}),
+        ("User Status", {"fields": ("is_staff",
+                                    "is_superuser",
+                                    "is_active",
+                                    "is_verified")}),
         ("Permissions & Group", {"fields": ("groups", "user_permissions")}),
     )
 
@@ -43,5 +46,8 @@ class UserProfileAdmin(admin.ModelAdmin):
     date_hierarchy = "created_date"
     ordering = ("-created_date",)
     fieldsets = (
-        ("User Info", {"fields": ("user", "first_name", "last_name", "birth_date")}),
+        ("User Info", {"fields": ("user",
+                                  "first_name",
+                                  "last_name",
+                                  "birth_date")}),
     )
