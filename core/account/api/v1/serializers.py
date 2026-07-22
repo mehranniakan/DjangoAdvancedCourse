@@ -1,3 +1,4 @@
+from account.models import User, UserProfile
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -5,8 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.urls import reverse
-from account.models import User, UserProfile
+
 from functions import send_email_function, generate_token
 
 
@@ -61,113 +61,115 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class AuthTokenSerializer(serializers.Serializer):
-    email = serializers.CharField(label=_("Email"), write_only=True)
+    email = serializers.CharField(
+        label=_("Email"),
+        write_only=True
+    )
     password = serializers.CharField(
         label=_("Password"),
-        style={"input_type": "password"},
+        style={'input_type': 'password'},
         trim_whitespace=False,
-        write_only=True,
+        write_only=True
     )
-    token = serializers.CharField(label=_("Token"), read_only=True)
+    token = serializers.CharField(
+        label=_("Token"),
+        read_only=True
+    )
 
     def validate(self, attrs):
-        username = attrs.get("email")
-        password = attrs.get("password")
-        request = self.context.get("request")
+        username = attrs.get('email')
+        password = attrs.get('password')
+
+        request = self.context.get('request')
 
         if username and password:
-            user = authenticate(request=request, username=username, password=password)
+
+            user = authenticate(request=request,
+                                username=username, password=password)
 
             # The authenticate call simply returns None for is_active=False
             # users. (Assuming the default ModelBackend authentication
             # backend.)
-
             if not user:
-                msg = _("Unable to log in with provided credentials.")
-                raise serializers.ValidationError(msg, code="authorization")
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg, code='authorization')
 
             if not user.is_verified:
-                msg = _("Please verify your email and try again.")
-                raise serializers.ValidationError(
-                    msg,
-                    code="authorization",
-                )
+                msg = _('Please verify your email and try again.')
+
+                token = generate_token(user)
+
+                send_email_function(['mehran613.niakan@gmail.com'],
+                                    'blog@info.com',
+                                    'account verify',
+                                    message="None",
+                                    email_type='html',
+                                    template='emails/account_verify.tpl',
+                                    context={
+                                        'user': user,
+                                        'activation_link': f'http://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
+                                    }
+                                    )
+
+                raise serializers.ValidationError(msg, code='authorization', )
 
             if not user.is_active:
-                msg = _("Your account has been disabled.")
-                raise serializers.ValidationError(
-                    msg,
-                    code="authorization",
-                )
+                msg = _('Your account has been disabled.')
+                raise serializers.ValidationError(msg, code='authorization', )
+
 
         else:
             msg = _('Must include "username" and "password".')
-            raise serializers.ValidationError(msg, code="authorization")
+            raise serializers.ValidationError(msg, code='authorization')
 
-        attrs["user"] = user
+        attrs['user'] = user
         return attrs
 
 
 class JwtSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
 
+    def validate(self, attrs):
+        username = attrs.get('email')
+        password = attrs.get('password')
+        request = self.context.get('request')
+
+        user = authenticate(request=request,
+                            username=username, password=password)
         data = super().validate(attrs)
 
-        username = attrs.get("email")
-        password = attrs.get("password")
-
-        user = authenticate(
-            request=self.context.get("request"), username=username, password=password
-        )
-
         if not user:
-            msg = _("No user found with provided credentials.")
-            raise serializers.ValidationError(
-                msg,
-                code="authorization",
-            )
+            msg = _('Unable to log in with provided credentials.')
+            raise serializers.ValidationError(msg, code='authorization')
 
         if not user.is_verified:
-            msg = _("Please verify your email and try again.")
+            msg = _('Please verify your email and try again.')
 
             token = generate_token(self.user)
-            host_name = 'https://127.0.0.1:8000'
-            verify_url = reverse('account:api-v1:account_verify_jwt')
 
-            verify_url = f"{host_name}{verify_url}?token={token}"
-
-            send_email_function(
-                ["mehran613.niakan@gmail.com"],
-                "blog@info.com",
-                "account verify",
-                message="None",
-                email_type="html",
-                template="emails/account_verify.tpl",
-                context={
-                    "user": self.user,
-                    "activation_link": verify_url,
-                },
-            )
-            raise serializers.ValidationError(
-                msg,
-                code="authorization",
-            )
+            send_email_function(['mehran613.niakan@gmail.com'],
+                                'blog@info.com',
+                                'account verify',
+                                message="None",
+                                email_type='html',
+                                template='emails/account_verify.tpl',
+                                context={
+                                    'user': self.user,
+                                    'activation_link': f'http://127.0.0.1:8000/account/api/v1/token/jwt/verify_account/?token={token}'
+                                }
+                                )
+            raise serializers.ValidationError(msg, code='authorization', )
 
         if not user.is_active:
-            msg = _("Your account has been disabled.")
-            raise serializers.ValidationError(
-                msg,
-                code="authorization",
-            )
+            msg = _('Your account has been disabled.')
+            raise serializers.ValidationError(msg, code='authorization', )
 
         refresh = self.get_token(self.user)
 
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)
-        data["email"] = user.email
+        data["email"] = attrs["email"]
 
-        user.last_login = timezone.now()
-        user.save()
+        User.objects.filter(id=self.user.id).update(last_login=timezone.now())
 
         return data
 

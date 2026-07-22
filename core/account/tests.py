@@ -66,6 +66,7 @@ def test_verify_token(test_user_unverified):
 
 
 # Create your tests here.
+
 @pytest.mark.django_db
 class TestAccount:
     # Register Tests
@@ -219,6 +220,24 @@ class TestAccount:
         verify_url = reverse('account:api-v1:account_verify_jwt')
 
         verify_url = f"{host_name}{verify_url}?token={test_verify_token}"
-        print(verify_url)
+
         get = api_client.get(verify_url)
         assert get.status_code == 200
+
+    # Change Password Tests
+
+    def test_change_password_valid_data(self,
+                                        api_client,
+                                        test_jwt):
+        url = reverse("account:api-v1:change_password")
+        token = test_jwt['access']
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        params = {
+            "old_password": "Mn00137400",
+            "new_password": "Mehr@n1374",
+        }
+
+        post = api_client.put(url, params)
+
+        assert post.status_code == 200
