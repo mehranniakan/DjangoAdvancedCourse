@@ -24,7 +24,6 @@ django-celery-beat
 django-redis
 
 
-
 # test Module
 pytest-django
 pytest
