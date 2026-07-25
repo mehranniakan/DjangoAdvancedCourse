@@ -1,17 +1,14 @@
-from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+
 from functions import get_weather
 from .serializers import OpenWeatherSerializer
-from rest_framework.views import APIView
 
 
 class OpenWeatherApi(GenericAPIView):
     serializer_class = OpenWeatherSerializer
-
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
