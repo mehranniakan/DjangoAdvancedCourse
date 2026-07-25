@@ -14,6 +14,7 @@ class OpenWeatherApi(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+
         lat = serializer.validated_data["lat"]
         lng = serializer.validated_data["lng"]
 
