@@ -32,7 +32,7 @@
                     value="{{ request.GET.q }}">
 
             {% if search_query %}
-            <a class="clear-search" href="{% url 'dashboard' %}">
+            <a class="clear-search" href="{% url 'ToDoApp:dashboard' %}">
                 &times;
             </a>
             {% endif %}
@@ -86,8 +86,15 @@
             <a class="btn btn-warning" href="{% url 'ToDoApp:edit_task' task.id %}">
                 ویرایش
             </a>
-            {% endif %}
+            {% else %}
+            <form action="{% url 'ToDoApp:complete_task' pk=task.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-success">
+                    بازگردانی
+                </button>
+            </form>
 
+            {% endif %}
             <form action="{% url 'ToDoApp:delete_task' task.id %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-danger">

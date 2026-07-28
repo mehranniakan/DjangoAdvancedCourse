@@ -58,7 +58,7 @@ class UpdateTasksView(UpdateView, LoginRequiredMixin):
     model = Task
     template_name = 'to_do_app/task_form.html'
     form_class = TaskForm
-    success_url = reverse_lazy('dashboard')
+    success_url = reverse_lazy('ToDoApp:dashboard')
     login_url = reverse_lazy('account:login')
 
     def form_valid(self, form):
@@ -91,6 +91,6 @@ def update_task_status(request, pk):
         else:
             messages.info(request, f'↩️ تسک "{task.title}" به لیست بازگشت!')
 
-        return redirect('account:dashboard')
+        return redirect('ToDoApp:dashboard')
     else:
-        return redirect('account:dashboard')
+        return redirect('ToDoApp:dashboard')
