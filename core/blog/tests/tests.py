@@ -1,8 +1,8 @@
 import pytest
+from account.models import User, UserProfile
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from account.models import User, UserProfile
 from blog.models import Category, Posts
 
 
@@ -21,7 +21,6 @@ def test_user():
         user=user_obj, first_name="tester", last_name="tester"
     )
     return profile_obj
-
 
 
 @pytest.fixture
