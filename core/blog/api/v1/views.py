@@ -1,7 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
+                                        IsAuthenticated)
+from .permissions import OwnerOnlyPermission
 from .pagination import DefaultPagination
 from .serializers import CategorySerializer, PostSerializer
 from ...models import Posts, Category
@@ -152,7 +153,7 @@ from ...models import Posts, Category
 class PostApi(viewsets.ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly, OwnerOnlyPermission]
+    permission_classes = [IsAuthenticated, OwnerOnlyPermission]
     filter_backends = (
         DjangoFilterBackend,
         filters.OrderingFilter,

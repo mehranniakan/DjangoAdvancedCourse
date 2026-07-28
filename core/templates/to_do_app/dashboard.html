@@ -8,7 +8,7 @@
 
 <div class="top-bar">
 
-    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+    <form action="{% url 'account:logout' %}" method="post" style="display: inline;">
         {% csrf_token %}
         <button class="logout-btn" style="background: none; border: none; cursor: pointer;" title="خروج" type="submit">
             <svg fill="currentColor" height="22" viewBox="0 0 16 16"
@@ -45,7 +45,7 @@
 
     </form>
 
-    <a class="btn btn-primary" href="{% url 'add_task' %}">
+    <a class="btn btn-primary" href="{% url 'ToDoApp:add_task' %}">
         + افزودن
     </a>
 
@@ -76,19 +76,19 @@
         <div class="task-buttons">
 
             {% if not task.status %}
-            <form action="{% url 'complete_task' pk=task.id %}" method="post">
+            <form action="{% url 'ToDoApp:complete_task' pk=task.id %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-success">
                     انجام شد
                 </button>
             </form>
 
-            <a class="btn btn-warning" href="{% url 'edit_task' task.id %}">
+            <a class="btn btn-warning" href="{% url 'ToDoApp:edit_task' task.id %}">
                 ویرایش
             </a>
             {% endif %}
 
-            <form action="{% url 'delete_task' task.id %}" method="post">
+            <form action="{% url 'ToDoApp:delete_task' task.id %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-danger">
                     حذف

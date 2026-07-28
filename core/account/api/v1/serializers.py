@@ -90,6 +90,25 @@ class AuthTokenSerializer(serializers.Serializer):
 
             if not user.is_verified:
                 msg = _("Please verify your email and try again.")
+                token = generate_token(self.user)
+                host_name = 'https://127.0.0.1:8000'
+                verify_url = reverse('account:api-v1:account_verify_jwt')
+
+                verify_url = f"{host_name}{verify_url}?token={token}"
+
+                send_email.delay(
+                    ["mehran613.niakan@gmail.com"],
+                    "blog@info.com",
+                    "account verify",
+                    message="None",
+                    email_type="html",
+                    template="emails/account_verify.tpl",
+                    context={
+                        "first_name": UserProfile.objects.get(user=self.user).first_name,
+                        "email": self.user.email,
+                        "activation_link": verify_url,
+                    },
+                )
                 raise serializers.ValidationError(
                     msg,
                     code="authorization",

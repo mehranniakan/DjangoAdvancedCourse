@@ -2,8 +2,6 @@ services:
   backend:
     build: .
     container_name: backend
-    env_file:
-      - .env.stage
     depends_on:
       - db
       - redis
@@ -11,33 +9,38 @@ services:
       sh -c "
       python manage.py migrate &&
       python manage.py collectstatic --noinput &&
-      gunicorn core.wsgi:application --bind 0.0.0.0:8000
+      gunicorn core.wsgi:application --bind 0.0.0.0
       "
     volumes:
       - ./core:/app
-      - static_volume:/app/static
+      - static_volume:/app/staticfiles
       - media_volume:/app/media
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
     expose:
       - "8000"
-
     restart: unless-stopped
+    environment:
+      SECRET_KEY: test
+      DEBUG: "False"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,backend,nginx"
+      stage: stage
+      DB_NAME: django_db
+      DB_USER: django_user
+      DB_PASSWORD: Mehr@n00137400
+      DB_HOST: db
+      DB_PORT: "5432"
 
   db:
     image: postgres:16-alpine
     container_name: postgres
     restart: unless-stopped
-    env_file:
-      - .env.stage
     volumes:
       - postgres_data:/var/lib/postgresql/data
     expose:
       - "5432"
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: Mehr@n00137400
 
   nginx:
     image: nginx
@@ -49,28 +52,24 @@ services:
       - "80:80"
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
-      - static_volume:/home/app/static
-      - media_volume:/home/app/media
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - '6379:6379'
-    env_file:
-      - .env.stage
+      - "6379:6379"
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - redis-data:/data
     environment:
-      - REDIS_ARGS=--requirepass your_password_here --appendonly yes
+      REDIS_ARGS: --requirepass your_password_here --appendonly yes
     restart: always
 
   worker:
     build: .
     container_name: worker
-    env_file:
-      - .env.stage
     depends_on:
       - redis
       - backend
@@ -78,12 +77,20 @@ services:
     volumes:
       - ./core:/app
     restart: unless-stopped
+    environment:
+      SECRET_KEY: test
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      stage: stage
+      DB_NAME: django_db
+      DB_USER: django_user
+      DB_PASSWORD: Mehr@n00137400
+      DB_HOST: db
+      DB_PORT: "5432"
 
   beat:
     build: .
     container_name: beat
-    env_file:
-      - .env.stage
     depends_on:
       - redis
       - worker
@@ -91,12 +98,20 @@ services:
     volumes:
       - ./core:/app
     restart: unless-stopped
+    environment:
+      SECRET_KEY: test
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      stage: stage
+      DB_NAME: django_db
+      DB_USER: django_user
+      DB_PASSWORD: Mehr@n00137400
+      DB_HOST: db
+      DB_PORT: "5432"
 
   locust:
     image: locustio/locust:latest
     container_name: locust
-    env_file:
-      - .env.stage
     depends_on:
       - backend
     working_dir: /mnt/locust
@@ -107,7 +122,6 @@ services:
     command: >
       -f /mnt/locust/locust/locustfile.py
       --host=http://backend:8000
-
 
 volumes:
   redis-data:

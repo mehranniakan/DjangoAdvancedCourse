@@ -58,6 +58,7 @@ def test_tasks(test_user_verified, api_client):
 
 @pytest.mark.django_db
 class TestToDOApp:
+
     def test_todoapp_get_tasks_without_filter(
             self, api_client, test_user_verified, test_token, test_jwt
     ):

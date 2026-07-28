@@ -13,12 +13,12 @@ from .forms import LoginForm, UserRegisterForm
 class LoginView(FormView):
     template_name = "registration/login.html"
     form_class = LoginForm
-    success_url = reverse_lazy("dashboard")
+    success_url = reverse_lazy("ToDoApp:dashboard")
 
     def form_valid(self, form):
         user = form.cleaned_data["user"]
         login(self.request, user)
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")
 
 
 class RegisterView(CreateView):
@@ -28,10 +28,10 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         form.save()
-        return redirect("login")
+        return redirect("account:login")
 
     def form_invalid(self, form):
-        return redirect("register")
+        return redirect("account:register")
 
 
 @login_required
@@ -39,6 +39,6 @@ def logout_view(request):
     if request.method == "POST":
         if request.user.is_authenticated:
             logout(request)
-            return redirect("login")
+            return redirect("account:login")
     else:
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")

@@ -23,6 +23,7 @@ def test_user():
     return profile_obj
 
 
+
 @pytest.fixture
 def test_category():
     cat_name = ["Funny", "Action", "Science", "Auto", "Industry", "Fashion"]
@@ -56,7 +57,9 @@ class TestBlog:
     def test_blog_get_post_valid_data(self,
                                       api_client,
                                       test_user):
+
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {"page": 1, "page_size": 1}
         posts = api_client.get(url, params)
         assert posts.status_code == 200
@@ -65,6 +68,7 @@ class TestBlog:
                                         api_client,
                                         test_user):
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {"page": 10, "page_size": 10}
         posts = api_client.get(url, params)
         assert posts.status_code == 404
@@ -75,6 +79,7 @@ class TestBlog:
                                         test_user,
                                         test_category):
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {
             "page": 1,
             "page_size": 1,
@@ -91,6 +96,7 @@ class TestBlog:
                                           test_user,
                                           test_category):
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {
             "page": 1,
             "page_size": 1,

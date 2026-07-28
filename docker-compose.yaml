@@ -4,68 +4,101 @@ services:
     container_name: backend
     depends_on:
       - redis
+      - db
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./core:/app
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=test
-      - DEBUG=True
-      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      SECRET_KEY: test
+      DEBUG: "True"
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      stage: dev
+      DB_NAME: django_db
+      DB_USER: django_user
+      DB_PASSWORD: Mehr@n00137400
+      DB_HOST: db
+      DB_PORT: "5432"
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: Mehr@n00137400
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - redis-data:/data
     environment:
-      - REDIS_ARGS=--requirepass your_password_here --appendonly yes
+      REDIS_ARGS: --requirepass your_password_here --appendonly yes
     restart: always
 
   worker:
     build: .
+    container_name: worker
     volumes:
       - ./core:/app
     depends_on:
       - redis
       - backend
-    command: python celery -A core worker --loglevel=info
+    command: python -m celery -A core worker --loglevel=info
+
+    environment:
+      SECRET_KEY: test
+      DEBUG: "True"
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      stage: dev
+      DB_NAME: django_db
+      DB_USER: django_user
+      DB_PASSWORD: Mehr@n00137400
+      DB_HOST: db
+      DB_PORT: "5432"
 
   beat:
     build: .
+    container_name: beat
     depends_on:
       - redis
       - worker
-    command: python celery -A core beat -l info
+    command: python -m celery -A core beat -l info
     volumes:
       - ./core:/app
+    environment:
+      SECRET_KEY: test
+      DEBUG: "True"
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      stage: dev
+      DB_NAME: django_db
+      DB_USER: django_user
+      DB_PASSWORD: Mehr@n00137400
+      DB_HOST: db
+      DB_PORT: "5432"
 
   smtp4dev:
     image: rnwood/smtp4dev:v3
     restart: on-failure
     ports:
-      # Change the number before : to the port the web interface should be accessible on
-      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
-      - '5000:80'
-      # Change the number before : to the port the SMTP server should be accessible on
-      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
-      - '25:25'
-      # Change the number before : to the port the IMAP server should be accessible on
-      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
-      - '143:143'
-      # Change the number before : to the port the POP3 server should be accessible on
-      # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
-      - '110:110'
+      - "5000:80"
+      - "25:25"
+      - "143:143"
+      - "110:110"
     volumes:
-      # This is where smtp4dev stores the database..
       - smtp4dev-data:/smtp4dev
     environment:
-      #Specifies the server hostname. Used in auto-generated TLS certificate if enabled.
-      - ServerOptions__HostName=smtp4dev
+      ServerOptions__HostName: smtp4dev
 
   locust:
     image: locustio/locust:latest
@@ -81,7 +114,7 @@ services:
       -f /mnt/locust/locust/locustfile.py
       --host=http://backend:8000
 
-
 volumes:
   smtp4dev-data:
   redis-data:
+  postgres_data:

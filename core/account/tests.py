@@ -178,6 +178,7 @@ class TestAccount:
     def test_account_logout_valid_data(self,
                                        api_client,
                                        test_token):
+
         url = reverse("account:api-v1:discard_token")
 
         api_client.credentials(HTTP_AUTHORIZATION=f"Token {test_token}")
