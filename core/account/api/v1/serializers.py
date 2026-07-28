@@ -7,9 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from functions import generate_token, send_email_function
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 from account.models import User, UserProfile
-from account.tasks import send_email
 
 
 class RegisterSerializer(serializers.ModelSerializer):
