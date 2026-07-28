@@ -17,7 +17,6 @@ from .serializers import (RegisterSerializer,
                           JwtSerializer,
                           ChangePasswordSerializer,
                           ProfileSerializer)
-
 from ...models import (User,
                        UserProfile)
 

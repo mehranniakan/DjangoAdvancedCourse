@@ -10,24 +10,38 @@
 
     <h2>ورود</h2>
 
-    <form method="post">
-
+    <form method="post" novalidate>
         {% csrf_token %}
 
+        {# نمایش خطاهای کلی فرم (مانند اعتبار سنجی کلی) #}
+        {% if form.non_field_errors %}
+        <div class="error-list">
+            {% for error in form.non_field_errors %}
+            <p class="error-message">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="form-group">
-
             <label>ایمیل</label>
-
             {{ form.email }}
-
+            {# نمایش خطاهای فیلد ایمیل #}
+            {% if form.email.errors %}
+            {% for error in form.email.errors %}
+            <span class="field-error">{{ error }}</span>
+            {% endfor %}
+            {% endif %}
         </div>
 
         <div class="form-group">
-
             <label>رمز عبور</label>
-
             {{ form.password }}
-
+            {# نمایش خطاهای فیلد پسورد #}
+            {% if form.password.errors %}
+            {% for error in form.password.errors %}
+            <span class="field-error">{{ error }}</span>
+            {% endfor %}
+            {% endif %}
         </div>
 
         <button class="btn btn-primary" type="submit">
@@ -38,11 +52,18 @@
 
     <p class="switch-page">
         حساب ندارید؟
-
-        <a href="{% url 'register' %}">
+        <a href="{% url 'account:register' %}">
             ساخت حساب
         </a>
     </p>
+
+    <!-- فوتر با لینک به مستندات API -->
+    <div class="auth-footer">
+        <hr>
+        <a href="{% url 'schema-swagger-ui' %}" target="_blank" class="api-link">
+            <i class="fas fa-code"></i> مستندات API (Swagger)
+        </a>
+    </div>
 
 </div>
 

@@ -1,14 +1,15 @@
+from account.models import UserProfile
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView
-from .models import Task
-from account.models import UserProfile
-from .forms import TaskForm
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from ToDoApp.models import Task
+
+from .forms import TaskForm
 
 # Create your views here.
 
@@ -17,15 +18,14 @@ class DashboardView(LoginRequiredMixin, ListView):
     template_name = "to_do_app/dashboard.html"
     paginate_by = 10
     context_object_name = "tasks"
-    login_url = reverse_lazy("login")
+    login_url = reverse_lazy("account:login")
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
 
         if q:
             return Task.objects.filter(
-                (Q(title__icontains=q) | Q(description__icontains=q))
-                & Q(user__user=self.request.user)
+                (Q(title__icontains=q) | Q(description__icontains=q)) & Q(user__user=self.request.user)
             ).order_by("-created_date")
         else:
             return Task.objects.filter(user__user=self.request.user).order_by(
@@ -43,14 +43,14 @@ class CreateTasksView(CreateView, LoginRequiredMixin):
     template_name = "to_do_app/task_form.html"
     form_class = TaskForm
     success_url = reverse_lazy("dashboard")
-    login_url = reverse_lazy("login")
+    login_url = reverse_lazy("account:login")
 
     def form_valid(self, form):
         user_profile = UserProfile.objects.get(user=self.request.user)
         task = form.save(commit=False)
         task.user = user_profile
         task.save()
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -62,24 +62,24 @@ class UpdateTasksView(UpdateView, LoginRequiredMixin):
     model = Task
     template_name = "to_do_app/task_form.html"
     form_class = TaskForm
-    success_url = reverse_lazy("dashboard")
-    login_url = reverse_lazy("login")
+    success_url = reverse_lazy("ToDoApp:dashboard")
+    login_url = reverse_lazy("account:login")
 
     def form_valid(self, form):
         user_profile = UserProfile.objects.get(user=self.request.user)
         task = form.save(commit=False)
         task.user = user_profile
         task.save()
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")
 
     def form_invalid(self, form):
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")
 
 
 class DeleteTasksView(DeleteView, LoginRequiredMixin):
     model = Task
-    success_url = reverse_lazy("dashboard")
-    login_url = reverse_lazy("login")
+    success_url = reverse_lazy("ToDoApp:dashboard")
+    login_url = reverse_lazy("account:login")
 
 
 @login_required
@@ -87,7 +87,7 @@ def update_task_status(request, pk):
     if request.method == "POST":
         task = get_object_or_404(Task, id=pk, user__user=request.user)
 
-        task.status = True
+        task.status = not task.status
         task.save()
 
         if task.status:
@@ -95,6 +95,6 @@ def update_task_status(request, pk):
         else:
             messages.info(request, f'↩️ تسک "{task.title}" به لیست بازگشت!')
 
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")
     else:
-        return redirect("dashboard")
+        return redirect("ToDoApp:dashboard")

@@ -9,22 +9,27 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
+
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV_NAME = config("ENV_NAME", default=config("stage", default="dev"))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-#hy=0s#tdc@t%^g&ez^)z3wy(m2)439aa9swhz#rb9oxpt_)zq"
+SECRET_KEY = config("SECRET_KEY", default="test")
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="localhost,127.0.0.1",
+    cast=lambda v: [host.strip() for host in v.split(",") if host.strip()],
+)
 
 # Application definition
 
@@ -36,14 +41,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
+    "django_celery_beat",
     "mail_templated",
     "django_filters",
     "drf_yasg",
     "account",
     "blog",
     "ToDoApp",
+    "OpenWeather",
 ]
 
 MIDDLEWARE = [
@@ -54,6 +62,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -81,8 +91,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DB_NAME", default="django_db"),
+        "USER": config("DB_USER", default="django_user"),
+        "PASSWORD": config("DB_PASSWORD", default=""),
+        "HOST": config("DB_HOST", default="db"),
+        "PORT": config("DB_PORT", default="5432"),
     }
 }
 
@@ -119,11 +133,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "/static/"
-# STATIC_ROOT = BASE_DIR / "static"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -148,18 +163,39 @@ REST_FRAMEWORK = {
 
 # Email Config
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = config("EMAIL_HOST", default="smtp4dev")
+EMAIL_PORT = config("EMAIL_PORT", default=25, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False, cast=bool)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
 
-EMAIL_HOST = "smtp4dev"
-EMAIL_PORT = 25
+CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
 
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
+# Celery Conf
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://redis:6379/0")
 
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = False
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-DEFAULT_FROM_EMAIL = "noreply@example.com"
+# Celery Beat conf
+CELERY_BEAT_SCHEDULE = {
+    "clear-task": {
+        "task": "account.tasks.clear_tasks",
+        "schedule": timedelta(minutes=10),
+    },
+    # "get_weather": {
+    #     "task": "OpenWeather.tasks.get_weather",
+    #     "schedule": timedelta(seconds=30),
+    # }
+}
+
+# Redis Cache Conf
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/2",
+    }
+}
 
 # Swagger Conf
 SWAGGER_SETTINGS = {

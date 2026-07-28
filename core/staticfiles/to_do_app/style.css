@@ -1,0 +1,422 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: tahoma, sans-serif;
+}
+
+body {
+    background: #f5f7fb;
+    color: #333;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ===========================
+   Card
+=========================== */
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
+}
+
+.auth-card {
+    max-width: 450px;
+    margin: 60px auto;
+}
+
+.form-card {
+    max-width: 700px;
+    margin: auto;
+}
+
+/* ===========================
+   Forms
+=========================== */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: .3s;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 3px rgba(78, 115, 223, .15);
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    transition: .3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: .95;
+}
+
+.btn-primary {
+    background: #4e73df;
+    color: #fff;
+}
+
+.btn-success {
+    background: #28a745;
+    color: #fff;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: #000;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: #fff;
+}
+
+.btn-search {
+    background: #17a2b8;
+    color: #fff;
+}
+
+/* ===========================
+   Login/Register
+=========================== */
+
+.switch-page {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.switch-page a {
+    text-decoration: none;
+    color: #4e73df;
+    font-weight: bold;
+}
+
+/* ===========================
+   Top Bar
+=========================== */
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.search-form {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+}
+
+.logout-btn {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+    color: #dc3545;
+    text-decoration: none;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+    transition: .3s;
+    flex-shrink: 0;
+}
+
+.logout-btn:hover {
+    background: #dc3545;
+    color: #fff;
+    transform: rotate(-10deg);
+}
+
+
+.search-form input {
+    flex: 1;
+}
+
+
+.search-box {
+    position: relative;
+    flex: 1;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.clear-search {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #666;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    transition: .2s;
+}
+
+.clear-search:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+/* ===========================
+   Tasks
+=========================== */
+
+.tasks {
+    display: grid;
+    grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.task-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
+    transition: .3s;
+}
+
+.task-card:hover {
+    transform: translateY(-3px);
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.description {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.task-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.task-buttons form {
+    display: inline;
+}
+
+/* ===========================
+   Status
+=========================== */
+
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.done {
+    background: #d4edda;
+    color: #155724;
+}
+
+.waiting {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* ===========================
+   Empty State
+=========================== */
+
+.empty-state {
+    width: 100%;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 50px 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
+}
+
+.empty-state h2 {
+    font-size: 70px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #777;
+    max-width: 420px;
+    line-height: 1.8;
+}
+
+/* ===========================
+   Pagination
+=========================== */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 35px;
+}
+
+.pagination a,
+.pagination span {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    color: #333;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .08);
+    transition: .3s;
+}
+
+.pagination a:hover {
+    background: #4e73df;
+    color: #fff;
+}
+
+.pagination .active {
+    background: #4e73df;
+    color: #fff;
+}
+
+/* ===========================
+   Buttons Group
+=========================== */
+
+.buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    .auth-card {
+        margin: 20px auto;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .task-buttons {
+        flex-direction: column;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .empty-state {
+        min-height: 50vh;
+        padding: 40px 15px;
+    }
+
+    .empty-state h2 {
+        font-size: 56px;
+    }
+
+    .empty-state h3 {
+        font-size: 22px;
+    }
+
+}

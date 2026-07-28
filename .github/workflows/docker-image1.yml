@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
 
       - name: Show requirements
         run: cat requirements.txt
-        
+
       - name: Build Docker image
         run: docker compose build --no-cache
 

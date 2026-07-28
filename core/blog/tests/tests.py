@@ -1,8 +1,8 @@
 import pytest
+from account.models import User, UserProfile
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from account.models import User, UserProfile
 from blog.models import Category, Posts
 
 
@@ -35,7 +35,6 @@ def test_category():
 @pytest.fixture
 def test_post(test_category,
               test_user):
-
     for i in range(1, 5):
         cat = test_category.order_by("?").first()
         Posts.objects.create(
@@ -59,6 +58,7 @@ class TestBlog:
                                       test_user):
 
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {"page": 1, "page_size": 1}
         posts = api_client.get(url, params)
         assert posts.status_code == 200
@@ -66,8 +66,8 @@ class TestBlog:
     def test_blog_get_post_invalid_page(self,
                                         api_client,
                                         test_user):
-
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {"page": 10, "page_size": 10}
         posts = api_client.get(url, params)
         assert posts.status_code == 404
@@ -77,8 +77,8 @@ class TestBlog:
                                         api_client,
                                         test_user,
                                         test_category):
-
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {
             "page": 1,
             "page_size": 1,
@@ -94,8 +94,8 @@ class TestBlog:
                                           api_client,
                                           test_user,
                                           test_category):
-
         url = reverse("blog:api-v1:post-list")
+        api_client.login(email=test_user.user.email, password="Mn00137400")
         params = {
             "page": 1,
             "page_size": 1,
@@ -112,7 +112,6 @@ class TestBlog:
                                             api_client,
                                             test_user,
                                             test_category):
-
         url = reverse("blog:api-v1:post-list")
         params = {
             "title": "test1",
@@ -128,7 +127,6 @@ class TestBlog:
                                          api_client,
                                          test_user,
                                          test_category):
-
         url = reverse("blog:api-v1:post-list")
         api_client.login(email=test_user.user.email, password="Mn00137400")
 
@@ -145,7 +143,7 @@ class TestBlog:
 
     # Update Posts
     def test_blog_put_post_without_login(
-        self,
+            self,
             api_client,
             test_user,
             test_category,
@@ -167,7 +165,7 @@ class TestBlog:
         assert put.status_code == 401
 
     def test_blog_put_post_with_login(
-        self,
+            self,
             api_client,
             test_user,
             test_category,
@@ -190,7 +188,7 @@ class TestBlog:
         assert put.status_code == 200
 
     def test_blog_patch_post_without_login(
-        self,
+            self,
             api_client,
             test_user,
             test_category,
@@ -209,7 +207,7 @@ class TestBlog:
         assert patch.status_code == 401
 
     def test_blog_patch_post_with_login(
-        self,
+            self,
             api_client,
             test_user,
             test_category,
@@ -230,7 +228,7 @@ class TestBlog:
 
     # Delete Posts
     def test_blog_delete_post_without_login(
-        self,
+            self,
             api_client,
             test_user,
             test_category,
@@ -243,7 +241,7 @@ class TestBlog:
         assert delete.status_code == 401
 
     def test_blog_delete_post_with_login(
-        self,
+            self,
             api_client,
             test_user,
             test_category,

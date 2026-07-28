@@ -100,7 +100,7 @@
 
     <div class="content">
 
-        <!--        <h2>Hello {{ user.first_name|default:user.email }},</h2>-->
+        <!--        <h2>Hello {{ first_name|default:email }},</h2>-->
         <h2>Hello Mehran,</h2>
 
         <p>

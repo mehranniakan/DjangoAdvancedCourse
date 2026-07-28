@@ -7,6 +7,7 @@ typing_extensions==4.13.2
 python-decouple==3.8
 djangorestframework
 Pillow
+gunicorn
 
 #Third Party Module
 markdown
@@ -16,6 +17,15 @@ drf-yasg[validation]
 djangorestframework-simplejwt
 django-mail-templated
 flake8
+Faker
+django-cors-headers
+locust
+celery[redis]
+django-celery-beat
+django-redis
+
+# db
+psycopg2-binary
 
 # test Module
 pytest-django
