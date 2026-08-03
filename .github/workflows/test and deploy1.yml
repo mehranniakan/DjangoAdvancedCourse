@@ -48,7 +48,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script:
-            cd ${{secrets.PROJECT_PATH}}
+            cd DjangoAdvancedCourse
             docker compose -f "docker-compose-stage.yaml" stop
             git pull
             docker compose -f "docker-compose-stage.yaml" restart
