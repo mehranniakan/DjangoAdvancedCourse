@@ -23,6 +23,8 @@ locust
 celery[redis]
 django-celery-beat
 django-redis
+django-cleanup
+django-extensions
 
 # db
 psycopg2-binary

@@ -1,0 +1,41 @@
+{% extends 'account/dashboard_base.html' %}
+
+{% block dashboard_content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">ویرایش پروفایل</h1>
+    <p class="text-sm text-slate-500 mt-2">اطلاعات حساب کاربری خود را بروزرسانی کنید.</p>
+</div>
+
+<form class="space-y-5" method="post">
+    {% csrf_token %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">نام</label>
+            {{ form.first_name }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">نام خانوادگی</label>
+            {{ form.last_name }}
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-2">تاریخ تولد</label>
+            {{ form.bitrh_date }}
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-2">نام کاربری</label>
+            {{ form.username }}
+        </div>
+    </div>
+
+    <div class="pt-4">
+        <button class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                type="submit">
+            ذخیره تغییرات
+        </button>
+    </div>
+</form>
+{% endblock %}

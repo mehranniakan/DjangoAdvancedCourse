@@ -1,0 +1,187 @@
+{% load blog_tags %}
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>افزودن پست جدید | کلینیک کمیل</title>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: Vazirmatn, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<div class="max-w-3xl mx-auto py-12 px-4 sm:px-6">
+    <!-- برگشت به عقب -->
+    <a class="inline-flex items-center text-sm text-gray-500 hover:text-brand-600 mb-6 transition"
+       href="{% url 'blog:blog_main' %}">
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M19 12H5m7 7l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </svg>
+        بازگشت به وبلاگ
+    </a>
+
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-brand-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-extrabold">ایجاد مقاله جدید</h1>
+            <p class="text-brand-100 text-sm mt-2">اطلاعات مقاله خود را در فرم زیر وارد کنید</p>
+        </div>
+
+        <form class="p-8 space-y-6" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="bg-red-50 border-r-4 border-red-500 p-4 mb-6 rounded-lg">
+                <p class="text-red-700 text-sm font-bold">لطفاً خطاهای زیر را اصلاح کنید:</p>
+            </div>
+            {% endif %}
+
+            <!-- عنوان -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="{{ form.title.id_for_label }}">
+                    عنوان مقاله
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- دسته بندی -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="{{ form.category.id_for_label }}">
+                    دسته‌بندی
+                </label>
+                <div class="relative">
+                    {{ form.category }}
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+                {% if form.category.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.category.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- تصویر -->
+            <div x-data="{ fileName: '' }">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="{{ form.image.id_for_label }}">
+                    تصویر شاخص
+                </label>
+
+                <div
+                        class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-2xl hover:border-brand-500 transition"
+                >
+                    <div class="space-y-3 text-center w-full">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                             viewBox="0 0 48 48">
+                            <path
+                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                            />
+                        </svg>
+
+                        <div class="text-sm text-gray-600">
+                            <label
+                                    class="cursor-pointer inline-flex items-center gap-1 bg-white rounded-md font-medium text-brand-600 hover:text-brand-500"
+                                    for="{{ form.image.id_for_label }}"
+                            >
+                                <span>انتخاب فایل</span>
+                            </label>
+                            <span class="text-gray-500">یا فایل را اینجا رها کنید</span>
+                        </div>
+
+                        <p class="text-xs text-gray-500">PNG, JPG تا 5 مگابایت</p>
+
+                        <div class="hidden">
+                            {{ form.image }}
+                        </div>
+
+                        <p
+                                class="text-xs text-brand-600 font-bold mt-2"
+                                x-show="fileName"
+                                x-text="'فایل انتخاب شده: ' + fileName"
+                        ></p>
+                    </div>
+                </div>
+
+                {% if form.image.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.image.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- متن مقاله -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="{{ form.content.id_for_label }}">
+                    محتوای مقاله
+                </label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.content.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- دکمه ثبت -->
+            <div class="pt-4">
+                <button class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-brand-200 transition duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                        type="submit">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    </svg>
+                    انتشار مقاله
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('fileUpload', () => ({
+            fileName: ''
+        }))
+    })
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('{{ form.image.id_for_label }}');
+        if (fileInput) {
+            fileInput.addEventListener('change', function (event) {
+                const fileNameContainer = event.target.closest('[x-data]');
+                if (fileNameContainer && event.target.files.length > 0) {
+                    fileNameContainer.__x.$data.fileName = event.target.files[0].name;
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

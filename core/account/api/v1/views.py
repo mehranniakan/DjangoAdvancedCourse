@@ -1,3 +1,6 @@
+from blog.api.v1.pagination import DefaultPagination
+from blog.api.v1.serializers import PostSerializer
+from blog.models import Posts
 from django.shortcuts import get_object_or_404
 from jwt import exceptions
 from rest_framework import status
@@ -12,13 +15,14 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
 
-from .serializers import (RegisterSerializer,
-                          AuthTokenSerializer,
-                          JwtSerializer,
-                          ChangePasswordSerializer,
-                          ProfileSerializer)
-from ...models import (User,
-                       UserProfile)
+from ...models import User, UserProfile
+from .serializers import (
+    AuthTokenSerializer,
+    ChangePasswordSerializer,
+    JwtSerializer,
+    ProfileSerializer,
+    RegisterSerializer,
+)
 
 
 class RegisterApi(GenericAPIView):
@@ -26,12 +30,9 @@ class RegisterApi(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user_serializer = RegisterSerializer(data=request.data)
-        user_serializer.is_valid(
-            raise_exception=True
-        )
+        user_serializer.is_valid(raise_exception=True)
         user_serializer.save()
-        return Response(user_serializer.validated_data,
-                        status=status.HTTP_201_CREATED)
+        return Response(user_serializer.validated_data, status=status.HTTP_201_CREATED)
 
 
 class AuthTokenApi(ObtainAuthToken):
@@ -39,15 +40,12 @@ class AuthTokenApi(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-            data=request.data,
-            context={"request": request}
+            data=request.data, context={"request": request}
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key,
-                         "user_id": user.pk,
-                         "email": user.email})
+        return Response({"token": token.key, "user_id": user.pk, "email": user.email})
 
 
 class JwtAuthToken(TokenObtainPairView):
@@ -126,9 +124,25 @@ class VerifyAccountApi(APIView):
             else:
                 user_obj.is_verified = True
                 user_obj.save()
-                return Response({"Msg": "User is verified"},
-                                status=status.HTTP_200_OK)
+                return Response({"Msg": "User is verified"}, status=status.HTTP_200_OK)
 
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class MyPostAPI(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = DefaultPagination
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        my_post = Posts.objects.filter(author__user=request.user)
+
+        if my_post.exists():
+            serializer = PostSerializer(
+                my_post, many=True, context={"request": request}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

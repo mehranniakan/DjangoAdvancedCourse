@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from functions import generate_token, send_email_function
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from account.models import User, UserProfile
 
 
@@ -220,6 +221,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source="user.id", read_only=True)
     email = serializers.EmailField(source="user.email", read_only=True)
     is_active = serializers.BooleanField(source="user.is_active", read_only=True)
+    is_verified = serializers.BooleanField(source="user.is_verified", read_only=True)
     is_staff = serializers.BooleanField(source="user.is_staff", read_only=True)
 
     class Meta:
@@ -229,8 +231,9 @@ class ProfileSerializer(serializers.ModelSerializer):
             "email",
             "is_active",
             "is_staff",
+            "is_verified",
             "first_name",
             "last_name",
             "birth_date",
         ]
-        read_only_fields = ["id", "email", "is_active", "is_staff"]
+        read_only_fields = ["id", "email", "is_verified", "is_active", "is_staff"]

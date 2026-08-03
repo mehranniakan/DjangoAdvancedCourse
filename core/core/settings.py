@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -44,9 +45,11 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
+    "django_cleanup.apps.CleanupConfig",
     "django_celery_beat",
     "mail_templated",
     "django_filters",
+    "django_extensions",
     "drf_yasg",
     "account",
     "blog",
@@ -199,36 +202,20 @@ CACHES = {
 
 # Swagger Conf
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Basic': {
-            'type': 'basic'
-        },
-        'Token': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-        },
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-        }
+    "SECURITY_DEFINITIONS": {
+        "Basic": {"type": "basic"},
+        "Token": {"type": "apiKey", "name": "Authorization", "in": "header"},
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"},
     },
-    'USE_SESSION_AUTH': False,
-    'LOGIN_URL': 'account:login',
-    'LOGOUT_URL': 'account:logout',
-    'JSON_EDITOR': True,
-    'SUPPORTED_SUBMIT_METHODS': [
-        'get',
-        'post',
-        'put',
-        'delete',
-        'patch'
-    ],
-    'OPERATIONS_SORTER': 'alpha',
-    'TAGS_SORTER': 'alpha',
-    'DOC_EXPANSION': 'none',
-    'DEEP_LINKING': True,
-    'PERSIST_AUTH': True,
-    'SECURITY_REQUIREMENTS': [{'Bearer': []},{'Token': []}],
+    "USE_SESSION_AUTH": False,
+    "LOGIN_URL": "account:login",
+    "LOGOUT_URL": "account:logout",
+    "JSON_EDITOR": True,
+    "SUPPORTED_SUBMIT_METHODS": ["get", "post", "put", "delete", "patch"],
+    "OPERATIONS_SORTER": "alpha",
+    "TAGS_SORTER": "alpha",
+    "DOC_EXPANSION": "none",
+    "DEEP_LINKING": True,
+    "PERSIST_AUTH": True,
+    "SECURITY_REQUIREMENTS": [{"Bearer": []}, {"Token": []}],
 }

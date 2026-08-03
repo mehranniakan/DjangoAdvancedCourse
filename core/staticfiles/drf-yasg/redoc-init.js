@@ -66,8 +66,7 @@ function hideEmptyVersion() {
 
 if (document.querySelector('span.api-info-version') || document.querySelector('div.api-info span')) {
     hideEmptyVersion();
-}
-else {
+} else {
     insertionQ('span.api-info-version').every(hideEmptyVersion);
     insertionQ('div.api-info span').every(hideEmptyVersion);
 }

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from blog.models import Posts, Category
+from blog.models import Category, Comments, Posts, CommentsReplies
 
 
 # Register your models here.
@@ -31,6 +31,7 @@ class PostAdmin(admin.ModelAdmin):
                     "content",
                     "category",
                     "status",
+                    "image",
                     "created_date",
                     "updated_date",
                 )
@@ -48,3 +49,30 @@ class CategoryAdmin(admin.ModelAdmin):
     date_hierarchy = "created_date"
     ordering = ("-created_date",)
     fieldsets = (("Category Details", {"fields": ("name", "status")}),)
+
+
+@admin.register(Comments)
+class CommentsAdmin(admin.ModelAdmin):
+    list_display = ("author", "post", "content", "is_approved")
+    search_fields = ("author", "post", "content")
+    list_filter = ("author", "post", "is_approved")
+    date_hierarchy = "created_date"
+    ordering = ("-created_date",)
+    fieldsets = (("Category Details",
+                  {"fields": ("author",
+                              "post",
+                              "content",
+                              "is_approved")}),)
+
+
+@admin.register(CommentsReplies)
+class RepliesAdmin(admin.ModelAdmin):
+    list_display = ("author", "comment", "content")
+    search_fields = ("author", "comment", "content")
+    list_filter = ("author",)
+    date_hierarchy = "created_date"
+    ordering = ("-created_date",)
+    fieldsets = (("Category Details",
+                  {"fields": ("author",
+                              "comment",
+                              "content")}),)

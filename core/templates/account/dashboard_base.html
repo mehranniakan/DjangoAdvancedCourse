@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load account_tags %}
+{% block head %}
+<script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block content %}
+<section class="bg-slate-50 min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- در اینجا از gap-6 استفاده کردیم که ستون‌ها را مرتب می‌کند -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- سایدبار (منو) که الان در سمت راست قرار می‌گیرد -->
+            <!-- کلاس lg:order-1 باعث می‌شود در دسکتاپ سمت راست باشد -->
+            <aside class="lg:col-span-1 lg:order-1">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sticky top-6">
+                    <div class="flex flex-col items-center text-center pb-5 border-b border-slate-100">
+                        <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold">
+                            {{ request.user.username|slice:":1"|upper }}
+                        </div>
+                        <h2 class="mt-4 text-lg font-bold text-slate-800">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">{{ request.user.email }}</p>
+                    </div>
+
+                    <nav class="mt-5 space-y-2">
+                        <a class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition"
+                           href="{% url 'account:profile_edit' pk=request.user.id|get_user_profile %}">
+                            <span>ویرایش پروفایل</span>
+                        </a>
+
+                        <a class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition"
+                           href="{% url 'account:my_posts' %}">
+                            <span>پست های من</span>
+                        </a>
+
+                        <a class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition"
+                           href="{% url 'account:profile_change_password' pk=request.user.id %}">
+                            <span>تغییر رمز عبور و ایمیل</span>
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- محتوای اصلی که در سمت چپ قرار می‌گیرد -->
+            <main class="lg:col-span-3 lg:order-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    {% block dashboard_content %}{% endblock %}
+                </div>
+            </main>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
