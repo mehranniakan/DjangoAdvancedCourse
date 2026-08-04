@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from functions import generate_token, send_email_function
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from decouple import config
 from account.models import User, UserProfile
 
 
@@ -89,7 +89,11 @@ class AuthTokenSerializer(serializers.Serializer):
                 msg = _("Please verify your email and try again.")
 
                 token = generate_token(self.user)
-                host_name = "https://127.0.0.1:8000"
+                if config('stage') != 'product':
+                    host_name = "https://127.0.0.1:8000"
+                else:
+                    host_name = "http://193.176.243.105"
+
                 verify_url = reverse("account:api-v1:account_verify_jwt")
 
                 verify_url = f"{host_name}{verify_url}?token={token}"
@@ -153,7 +157,10 @@ class JwtSerializer(TokenObtainPairSerializer):
             msg = _("Please verify your email and try again.")
 
             token = generate_token(self.user)
-            host_name = "https://127.0.0.1:8000"
+            if config("stage") != "product":
+                host_name = "https://127.0.0.1:8000"
+            else:
+                host_name = "http://193.176.243.105"
             verify_url = reverse("account:api-v1:account_verify_jwt")
 
             verify_url = f"{host_name}{verify_url}?token={token}"

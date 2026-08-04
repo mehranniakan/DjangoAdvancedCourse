@@ -1,9 +1,9 @@
+from decouple import config
 from django import forms
 from django.contrib.auth import authenticate, password_validation
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse
 from functions import generate_token, send_email_function
-
 from account.models import User, UserProfile
 
 
@@ -149,7 +149,10 @@ class LoginForm(forms.Form):
 
             elif not user.is_verified:
                 token = generate_token(user)
-                host_name = "https://127.0.0.1:8000"
+                if config("stage") != "product":
+                    host_name = "https://127.0.0.1:8000"
+                else:
+                    host_name = "http://193.176.243.105"
                 verify_url = reverse("account:email_verify_view")
 
                 verify_url = f"{host_name}{verify_url}?token={token}"

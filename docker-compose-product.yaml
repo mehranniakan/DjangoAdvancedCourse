@@ -22,12 +22,18 @@ services:
       SECRET_KEY: test
       DEBUG: "False"
       ALLOWED_HOSTS: "localhost,127.0.0.1,backend,nginx,193.176.243.105"
-      stage: stage
+      stage: product
       DB_NAME: django_db
       DB_USER: django_user
       DB_PASSWORD: Mehr@n00137400
       DB_HOST: db
       DB_PORT: "5432"
+      EMAIL_HOST: "smtp.gmail.com"
+      EMAIL_PORT: "587"
+      EMAIL_USE_TLS: True
+      EMAIL_HOST_USER: "mehran613.niakan@gmail.com"
+      EMAIL_HOST_PASSWORD: "aleh mqvp yhzm brok"
+      DEFAULT_FROM_EMAIL : "mehran613.niakan@gmail.com"
 
   db:
     image: postgres:16-alpine
