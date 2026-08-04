@@ -2,9 +2,6 @@
 https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html
 """
 import os
-
-from django.conf import settings
-
 from celery import Celery
 
 # this code copied from manage.py

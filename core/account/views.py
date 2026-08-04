@@ -60,9 +60,7 @@ class PostListProfile(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user_profile = UserProfile.objects.get(user=self.request.user)
         return Posts.objects.filter(author=user_profile, status=True).annotate(
-            new_comments_count=Count(
-                "comments"
-            )
+            new_comments_count=Count("comments")
         )
 
 
@@ -74,7 +72,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class PasswordEmailUpdateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
-
     form_class = PasswordEmailChangeForm
     template_name = "account/password_email_change.html"
     success_url = reverse_lazy("account:profile")
@@ -102,27 +99,26 @@ class EmailVerifyView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         get_token = self.request.GET.get("token")
-        
+
         if get_token:
             try:
                 token = AccessToken(get_token)
 
             except exceptions.ExpiredSignatureError:
-                messages.error(request,'توکن ارسالی منقضی شده لطفا مجددا لاگین کنید')
+                messages.error(request, "توکن ارسالی منقضی شده لطفا مجددا لاگین کنید")
 
             except exceptions.InvalidTokenError:
-                messages.error(request, 'توکن ارسالی نامعتبر است لطفا مجددا لاگین کنید')
-
+                messages.error(request, "توکن ارسالی نامعتبر است لطفا مجددا لاگین کنید")
 
             user_id = token["user_id"]
             user_obj = get_object_or_404(User, id=user_id)
 
             if user_obj.is_verified:
-                messages.success(request,'ایمیل شما تایید شده است')
+                messages.success(request, "ایمیل شما تایید شده است")
             else:
                 user_obj.is_verified = True
                 user_obj.save()
-                messages.success(request,"ایمیل شما با موفقیت تایید شد")
+                messages.success(request, "ایمیل شما با موفقیت تایید شد")
 
         else:
             messages.error(request, "توکن ارسالی نامعتبر است لطفا مجددا لاگین کنید")

@@ -14,7 +14,8 @@ exclude =
     static,
     media,
     __init__.py,
-    settings.py
+    settings.py,
+    ./account/apps.py
 
 per-file-ignores =
     core/settings.py:F401,F403,F405,E501

@@ -16,10 +16,10 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sticky top-6">
                     <div class="flex flex-col items-center text-center pb-5 border-b border-slate-100">
                         <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold">
-                            {{ request.user.username|slice:":1"|upper }}
+                            {{ request.user.userprofile.first_name|slice:":1"|upper }}
                         </div>
                         <h2 class="mt-4 text-lg font-bold text-slate-800">
-                            {{ request.user.get_full_name|default:request.user.username }}
+                            {{ request.user.userprofile.first_name }} {{ request.user.userprofile.last_name }}
                         </h2>
                         <p class="text-sm text-slate-500 mt-1">{{ request.user.email }}</p>
                     </div>

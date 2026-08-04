@@ -16,7 +16,7 @@ def send_account_verification_email(sender, instance, created, **kwargs):
         verify_url = reverse("account:api-v1:account_verify_jwt")
 
         verify_url = f"{host_name}{verify_url}?token={token}"
-        
+
         send_email_function(
             to=[instance.email],
             sender="blog@info.com",

@@ -277,8 +277,7 @@ class PasswordEmailChangeForm(forms.Form):
             )
 
         if (
-            email_changed
-            and User.objects.exclude(pk=self.user.pk)
+            email_changed and User.objects.exclude(pk=self.user.pk)
             .filter(email__iexact=email)
             .exists()
         ):
