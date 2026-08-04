@@ -49,9 +49,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             cd ${{secrets.PROJECT_PATH}}
-            docker compose -f "docker-compose-product.yaml" stop
+            docker compose down
             git pull
-            docker compose -f "docker-compose-product.yaml" restart
-
-
-
+            docker compose -f docker-compose-product.yaml up -d --build
+            

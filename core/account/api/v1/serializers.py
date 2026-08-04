@@ -95,7 +95,7 @@ class AuthTokenSerializer(serializers.Serializer):
                 verify_url = f"{host_name}{verify_url}?token={token}"
 
                 send_email_function(
-                    ["mehran613.niakan@gmail.com"],
+                    [self.user.email],
                     "blog@info.com",
                     "account verify",
                     message="None",
@@ -159,7 +159,7 @@ class JwtSerializer(TokenObtainPairSerializer):
             verify_url = f"{host_name}{verify_url}?token={token}"
 
             send_email_function(
-                ["mehran613.niakan@gmail.com"],
+                [self.user.email],
                 "blog@info.com",
                 "account verify",
                 message="None",

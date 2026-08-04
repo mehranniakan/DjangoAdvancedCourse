@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ارسال کد فعال‌سازی | کلینیک کمیل</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: "#f0fdf4",
+                            100: "#dcfce7",
+                            500: "#22c55e",
+                            600: "#16a34a",
+                            700: "#15803d"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+    />
+
+    <style>
+        body {
+            font-family: Vazirmatn, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <main class="w-full max-w-md">
+        <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-9 text-center">
+            <div
+                class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center"
+                aria-hidden="true"
+            >
+                <i data-lucide="mail-check" class="w-8 h-8 text-brand-600"></i>
+            </div>
+
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900">
+                کد فعال‌سازی ارسال شد
+            </h1>
+
+            <p class="mt-3 text-sm sm:text-base leading-7 text-slate-500">
+                کد فعال‌سازی حساب شما به آدرس ایمیل زیر ارسال شده است.
+                لطفاً صندوق ورودی و پوشه Spam را بررسی کنید.
+            </p>
+
+            <!-- در Django مقدار email را از View ارسال کنید -->
+            <p
+                class="mt-4 inline-flex max-w-full items-center gap-2 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 rounded-lg"
+                dir="ltr"
+            >
+                <i data-lucide="mail" class="w-4 h-4 shrink-0 text-brand-600"></i>
+                <span class="truncate">me***@example.com</span>
+            </p>
+
+            <div class="my-7 border-t border-slate-100"></div>
+
+            <p id="timerText" class="text-sm text-slate-500">
+                امکان ارسال مجدد کد تا
+                <span id="timer" class="font-bold text-brand-600">02:00</span>
+                دیگر فعال می‌شود.
+            </p>
+
+            <button
+                id="resendButton"
+                type="button"
+                disabled
+                class="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+            >
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                ارسال مجدد کد فعال‌سازی
+            </button>
+
+            <p
+                id="successMessage"
+                class="hidden mt-4 text-sm font-medium text-brand-700"
+                role="status"
+            >
+                کد فعال‌سازی جدید با موفقیت ارسال شد.
+            </p>
+
+            <a
+                href="#"
+                class="mt-7 inline-flex items-center gap-2 text-sm text-slate-500 transition hover:text-brand-600"
+            >
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                بازگشت و تغییر آدرس ایمیل
+            </a>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const resendButton = document.getElementById("resendButton");
+        const timerElement = document.getElementById("timer");
+        const timerText = document.getElementById("timerText");
+        const successMessage = document.getElementById("successMessage");
+
+        let remainingSeconds = 120;
+        let timerInterval;
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remaining = seconds % 60;
+
+            return `${String(minutes).padStart(2, "0")}:${String(remaining).padStart(2, "0")}`;
+        }
+
+        function startTimer() {
+            resendButton.disabled = true;
+            successMessage.classList.add("hidden");
+            remainingSeconds = 120;
+            timerElement.textContent = formatTime(remainingSeconds);
+
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                remainingSeconds -= 1;
+                timerElement.textContent = formatTime(remainingSeconds);
+
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    resendButton.disabled = false;
+                    timerText.textContent = "کد فعال‌سازی را دریافت نکرده‌اید؟";
+                }
+            }, 1000);
+        }
+
+        resendButton.addEventListener("click", () => {
+            /*
+             * در پروژه Django این بخش را با درخواست واقعی جایگزین کنید:
+             *
+             * fetch("/account/resend-activation-code/", {
+             *     method: "POST",
+             *     headers: {
+             *         "Content-Type": "application/json",
+             *         "X-CSRFToken": "{{ csrf_token }}"
+             *     }
+             * });
+             */
+
+            successMessage.classList.remove("hidden");
+            timerText.innerHTML = `
+                امکان ارسال مجدد کد تا
+                <span id="timer" class="font-bold text-brand-600">02:00</span>
+                دیگر فعال می‌شود.
+            `;
+
+            // پس از بازسازی HTML، رفرنس تایمر را به‌روزرسانی می‌کنیم.
+            window.timerElement = document.getElementById("timer");
+            startTimer();
+        });
+
+        startTimer();
+    </script>
+</body>
+</html>

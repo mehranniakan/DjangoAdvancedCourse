@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth import authenticate, password_validation
 from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse
+from functions import generate_token, send_email_function
 
 from account.models import User, UserProfile
 
@@ -144,6 +146,30 @@ class LoginForm(forms.Form):
                 raise forms.ValidationError("email or password is incorrect.")
             elif not user.is_active:
                 raise forms.ValidationError("Your account is disabled.")
+
+            elif not user.is_verified:
+                token = generate_token(user)
+                host_name = "https://127.0.0.1:8000"
+                verify_url = reverse("account:email_verify_view")
+
+                verify_url = f"{host_name}{verify_url}?token={token}"
+
+                send_email_function(
+                    [user.email],
+                    "blog@info.com",
+                    "account verify",
+                    message="None",
+                    email_type="html",
+                    template="emails/account_verify.tpl",
+                    context={
+                        "user": user,
+                        "activation_link": verify_url,
+                    },
+                )
+                raise forms.ValidationError(
+                    "Your account is not verified yet, verfication email has been send."
+                )
+
             else:
                 cleaned_data["user"] = user
 
@@ -251,7 +277,8 @@ class PasswordEmailChangeForm(forms.Form):
             )
 
         if (
-            email_changed and User.objects.exclude(pk=self.user.pk)
+            email_changed
+            and User.objects.exclude(pk=self.user.pk)
             .filter(email__iexact=email)
             .exists()
         ):

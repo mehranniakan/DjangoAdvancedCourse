@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
-
+from celery.schedules import crontab
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "django_filters",
     "django_extensions",
     "drf_yasg",
-    "account",
+    "account.apps.AccountConfig",
     "blog",
     "ToDoApp",
     "OpenWeather",
@@ -186,6 +186,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "account.tasks.clear_tasks",
         "schedule": timedelta(minutes=10),
     },
+    "clear-unverified-accounts": {
+        "task": "account.tasks.clear_unverified_accounts",
+        "schedule": crontab(day_of_week='friday'),
+    }
     # "get_weather": {
     #     "task": "OpenWeather.tasks.get_weather",
     #     "schedule": timedelta(seconds=30),

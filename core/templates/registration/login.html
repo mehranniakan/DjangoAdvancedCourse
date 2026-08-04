@@ -9,7 +9,23 @@
 <div class="card auth-card">
 
     <h2>ورود</h2>
-
+    {% if messages %}
+    <div class="mb-4 space-y-3">
+        {% for message in messages %}
+        <div
+                class="rounded-xl border px-4 py-3 text-sm font-medium
+                {% if message.tags == 'success' %}
+                    border-green-200 bg-green-50 text-green-700
+                {% elif message.tags == 'error' %}
+                    border-red-200 bg-red-50 text-red-700
+                {% else %}
+                    border-gray-200 bg-gray-50 text-gray-700
+                {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <form method="post" novalidate>
         {% csrf_token %}
 

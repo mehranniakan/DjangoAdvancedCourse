@@ -1,11 +1,12 @@
 from blog.models import Posts
+from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models import Count
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -14,8 +15,10 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views.generic.edit import FormView
+from jwt import exceptions
+from rest_framework_simplejwt.tokens import AccessToken
 
-from account.models import UserProfile
+from account.models import User, UserProfile
 
 from .forms import LoginForm, PasswordEmailChangeForm, ProfileEditForm, UserRegisterForm
 
@@ -41,9 +44,6 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         form.save()
         return redirect("account:login")
-
-    def form_invalid(self, form):
-        return redirect("account:register")
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -95,6 +95,39 @@ class PasswordEmailUpdateView(LoginRequiredMixin, SuccessMessageMixin, FormView)
             update_session_auth_hash(self.request, user)
 
         return super().form_valid(form)
+
+
+class EmailVerifyView(TemplateView):
+    template_name = "account/email_confirm.html"
+
+    def get(self, request, *args, **kwargs):
+        get_token = self.request.GET.get("token")
+        
+        if get_token:
+            try:
+                token = AccessToken(get_token)
+
+            except exceptions.ExpiredSignatureError:
+                messages.error(request,'توکن ارسالی منقضی شده لطفا مجددا لاگین کنید')
+
+            except exceptions.InvalidTokenError:
+                messages.error(request, 'توکن ارسالی نامعتبر است لطفا مجددا لاگین کنید')
+
+
+            user_id = token["user_id"]
+            user_obj = get_object_or_404(User, id=user_id)
+
+            if user_obj.is_verified:
+                messages.success(request,'ایمیل شما تایید شده است')
+            else:
+                user_obj.is_verified = True
+                user_obj.save()
+                messages.success(request,"ایمیل شما با موفقیت تایید شد")
+
+        else:
+            messages.error(request, "توکن ارسالی نامعتبر است لطفا مجددا لاگین کنید")
+
+        return super().get(request, *args, **kwargs)
 
 
 @login_required

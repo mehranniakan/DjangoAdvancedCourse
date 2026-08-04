@@ -12,7 +12,7 @@ class HelloWorldUser(HttpUser):
 
     @task
     def test_posts(self):
-        response = self.client.get("/blog/api/v1/post/", )
+        response = self.client.get("/blog/api/v1/post/")
 
         print(response.status_code)
         print(response.text)

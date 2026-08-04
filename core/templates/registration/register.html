@@ -14,11 +14,43 @@
 
         {% csrf_token %}
 
+
+        {% if messages %}
+        <div class="mb-4 space-y-3">
+            {% for message in messages %}
+            <div
+                    class="rounded-xl border px-4 py-3 text-sm font-medium
+                {% if message.tags == 'success' %}
+                    border-green-200 bg-green-50 text-green-700
+                {% elif message.tags == 'error' %}
+                    border-red-200 bg-red-50 text-red-700
+                {% else %}
+                    border-gray-200 bg-gray-50 text-gray-700
+                {% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="form-group">
 
             <label>نام</label>
 
             {{ form.first_name }}
+
+
+            {% for error in form.first_name.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
 
         </div>
 
@@ -27,6 +59,9 @@
             <label>نام خانوادگی</label>
 
             {{ form.last_name }}
+            {% for error in form.last_name.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
 
         </div>
 
@@ -35,6 +70,10 @@
             <label>ایمیل</label>
 
             {{ form.email }}
+            {% for error in form.email.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+
 
         </div>
 
@@ -43,6 +82,9 @@
             <label>تاریخ تولد</label>
 
             {{ form.birth_date }}
+            {% for error in form.birth_date.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
 
         </div>
 
@@ -51,6 +93,9 @@
             <label>رمز عبور</label>
 
             {{ form.password1 }}
+            {% for error in form.password1.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
 
         </div>
 
@@ -59,6 +104,9 @@
             <label>تکرار رمز عبور</label>
 
             {{ form.password2 }}
+            {% for error in form.password2.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
 
         </div>
 

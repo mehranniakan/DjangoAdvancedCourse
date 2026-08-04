@@ -1,7 +1,8 @@
 from celery import shared_task
-
-from ToDoApp.models import Task
 from functions import send_email_function
+from ToDoApp.models import Task
+
+from account.models import User
 
 
 @shared_task
@@ -38,3 +39,9 @@ def send_email(to: list,
 def clear_tasks():
     Task.objects.all().delete()
     return "Tasks deleted successfully"
+
+
+@shared_task
+def clear_unverified_accounts():
+    User.objects.filter(is_verified=False).delete()
+    return "Unverified accounts deleted successfully"

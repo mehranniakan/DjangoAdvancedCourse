@@ -10,6 +10,7 @@ Pillow
 gunicorn
 
 #Third Party Module
+django-cleanup
 markdown
 django-filter
 pygments
@@ -23,7 +24,6 @@ locust
 celery[redis]
 django-celery-beat
 django-redis
-django-cleanup
 django-extensions
 
 # db

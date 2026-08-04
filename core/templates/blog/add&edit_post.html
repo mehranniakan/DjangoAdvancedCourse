@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>افزودن پست جدید | کلینیک کمیل</title>
+    <title>افزودن پست جدید | جنگو بلاگ</title>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -53,6 +53,31 @@
 
         <form class="p-8 space-y-6" enctype="multipart/form-data" method="post">
             {% csrf_token %}
+            {% if messages %}
+            <div class="mb-4 space-y-3">
+                {% for message in messages %}
+                <div
+                        class="rounded-xl border px-4 py-3 text-sm font-medium
+                {% if message.tags == 'success' %}
+                    border-green-200 bg-green-50 text-green-700
+                {% elif message.tags == 'error' %}
+                    border-red-200 bg-red-50 text-red-700
+                {% else %}
+                    border-gray-200 bg-gray-50 text-gray-700
+                {% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+            <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
 
             {% if form.errors %}
             <div class="bg-red-50 border-r-4 border-red-500 p-4 mb-6 rounded-lg">
